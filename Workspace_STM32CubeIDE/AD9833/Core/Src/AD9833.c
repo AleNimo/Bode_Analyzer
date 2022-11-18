@@ -37,10 +37,6 @@ void AD9833_Init(void)
 
 	/******************************************/
 
-	AD9833_SetFrequency(1);	//Escribo FREQ0 con la frecuencia de 1Hz
-
-	/******************************************/
-
 	uint16_t phase_reg = 0b1100000000000000;
 	/*
 	 * D15,D14,D13 = 110: escritura en registro PHASE0
@@ -58,6 +54,10 @@ void AD9833_Init(void)
 	HAL_GPIO_WritePin(SPI3_CS_GPIO_Port, SPI3_CS_Pin, GPIO_PIN_RESET);
 	HAL_SPI_Transmit(&hspi3, (uint8_t*)&control_reg, 1, HAL_MAX_DELAY);	//Escribo registro de control
 	HAL_GPIO_WritePin(SPI3_CS_GPIO_Port, SPI3_CS_Pin, GPIO_PIN_SET);
+
+	/******************************************/
+
+	AD9833_SetFrequency(1);	//Escribo FREQ0 con la frecuencia de 1Hz
 
 }
 
