@@ -183,3 +183,10 @@ scripts/__pycache__/
 *.dwl2
 
 # End of https://www.toptal.com/developers/gitignore/api/altium
+
+### TouchGFX ###
+/generated
+
+/build
+
+/simulator/msvs/.vs
