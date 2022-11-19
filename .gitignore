@@ -165,9 +165,9 @@ __Previews
 *.$$$
 
 #useless dirs
-Project\ Outputs
-Project\ Logs
-Project Outputs for*
+/__Previews
+/Project Logs for Bode_Analyzer
+/Project Outputs for*
 
 #History
 History
