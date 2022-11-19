@@ -93,7 +93,6 @@ local.properties
 
 # Libraries
 *.lib
-*.a
 *.la
 *.lo
 
@@ -165,12 +164,11 @@ __Previews
 *.$$$
 
 #useless dirs
-/__Previews
-/Project Logs for Bode_Analyzer
-/Project Outputs for*
+__Previews/
+Project Logs for Bode_Analyzer/
 
 #History
-History
+History/
 
 #Exports, but not manual ones
 exports/*
@@ -185,8 +183,8 @@ scripts/__pycache__/
 # End of https://www.toptal.com/developers/gitignore/api/altium
 
 ### TouchGFX ###
-/generated
+generated/
 
-/build
+build/
 
-/simulator/msvs/.vs
+simulator/msvs/.vs
