@@ -3,19 +3,19 @@
 
 ### Eclipse ###
 .metadata
-bin/
-tmp/
+bin
+tmp
 *.tmp
 *.bak
 *.swp
 *~.nib
 local.properties
-.settings/
+.settings
 .loadpath
 .recommenders
 
 # External tool builders
-.externalToolBuilders/
+.externalToolBuilders
 
 # Locally stored "Eclipse launch configurations"
 *.launch
@@ -48,11 +48,11 @@ local.properties
 .springBeans
 
 # Code Recommenders
-.recommenders/
+.recommenders
 
 # Annotation Processing
-.apt_generated/
-.apt_generated_test/
+.apt_generated
+.apt_generated_test
 
 # Scala IDE specific (Scala & Java development for Eclipse)
 .cache-main
@@ -65,7 +65,7 @@ local.properties
 
 ### Eclipse Patch ###
 # Spring Boot Tooling
-.sts4-cache/
+.sts4-cache
 
 # End of https://www.toptal.com/developers/gitignore/api/eclipse
 
@@ -119,7 +119,7 @@ local.properties
 # Kernel Module Compile Results
 *.mod*
 *.cmd
-.tmp_versions/
+.tmp_versions
 modules.order
 Module.symvers
 Mkfile.old
@@ -136,7 +136,7 @@ dkms.conf
 *.PcbDoc.htm
 
 # Access lock file for dbLib sources
-**/*.ldb
+*.ldb
 
 # Various Altium files
 *.PrjPCBStructure
@@ -152,18 +152,17 @@ dkms.conf
 *.$$$
 
 #useless dirs
-__Previews/
-Project Logs for Bode_Analyzer/
+__Previews
+Project Logs for Bode_Analyzer
 
 #History
-History/
+History
 
 #Exports, but not manual ones
-exports/*
-!exports/manual
+exports
 
 #Python stuff
-scripts/__pycache__/
+__pycache__
 *.bak
 *.dwl
 *.dwl2
@@ -171,8 +170,8 @@ scripts/__pycache__/
 # End of https://www.toptal.com/developers/gitignore/api/altium
 
 ### TouchGFX ###
-generated/
+generated
 
-build/
+build
 
-simulator/msvs/.vs
+.vs
