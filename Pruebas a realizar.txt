@@ -1,4 +1,3 @@
--Comparativa filtro desacople continua: Medir tantalio 10u con 100k vs 100n con 1Meg
--Medir offset opearcionales para decidir si hace falta agregar preset de corrección.
+-Medir offset operacionales para decidir si hace falta agregar preset de corrección.
 -Ensayar error de detector de pico a distintas frecuencias y tener esos datos.
 -Ensayar transferencia de ADC de NUCLEO-F401RE.

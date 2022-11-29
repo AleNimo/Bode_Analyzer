@@ -98,23 +98,18 @@ int main(void)
 
   /* Infinite loop */
   /* USER CODE BEGIN WHILE */
-  uint8_t estado = 0;
   while (1)
   {
 	  if(puls)
 	  {
-		  AD9833_SetEnabled(estado);
+		  if (i == 1000000) i=1;
 
-		  estado = !estado;
+		  else if(i >= 100000)
+			i = i+100000;
 
-//		  if (i == 1000000) i=1;
-//
-//		  else if(i >= 100000)
-//			i = i+100000;
-//
-//		  else i = i*10;
-//
-//		  AD9833_SetFrequency(i);
+		  else i = i*10;
+
+		  AD9833_SetFrequency(i);
 		  HAL_Delay(100);
 		  puls = 0;
 	  }
