@@ -1,0 +1,53 @@
+<?xml version="1.0" encoding="utf-8"?>
+<TextDatabase xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="texts.xsd" Version="4.20.0">
+  <Languages>
+    <Language Id="GB" />
+  </Languages>
+  <Texts>
+    <TextGroup Id="Group1" />
+    <TextGroup Id="Unsorted">
+      <Text Id="__SingleUse_CYOR" Alignment="Right" TypographyId="Prueba_Texto">
+        <Translation Language="GB">&lt;&gt;</Translation>
+      </Text>
+      <Text Id="__SingleUse_K25R" Alignment="Left" TypographyId="Prueba_Texto">
+        <Translation Language="GB">Γ</Translation>
+      </Text>
+      <Text Id="text_butt_MAG_PH" Alignment="Center" TypographyId="Prueba_Texto">
+        <Translation Language="GB">&lt;value&gt;</Translation>
+      </Text>
+      <Text Id="ResourceId1" Alignment="Left" TypographyId="Prueba_Texto">
+        <Translation Language="GB">New Text</Translation>
+      </Text>
+      <Text Id="__SingleUse_MIDP" Alignment="Center" TypographyId="Prueba_Texto">
+        <Translation Language="GB">&lt;value&gt;</Translation>
+      </Text>
+      <Text Id="__SingleUse_3ZAQ" Alignment="Center" TypographyId="Prueba_Texto">
+        <Translation Language="GB">&lt;value&gt;</Translation>
+      </Text>
+      <Text Id="__SingleUse_L2RW" Alignment="Center" TypographyId="Prueba_Texto">
+        <Translation Language="GB">&lt;value&gt;</Translation>
+      </Text>
+      <Text Id="__SingleUse_X5G6" Alignment="Center" TypographyId="Prueba_Texto">
+        <Translation Language="GB">&lt;value&gt;</Translation>
+      </Text>
+      <Text Id="__SingleUse_MRIO" Alignment="Center" TypographyId="Prueba_Texto">
+        <Translation Language="GB">&lt;value&gt;</Translation>
+      </Text>
+      <Text Id="__SingleUse_Y3J4" Alignment="Center" TypographyId="Prueba_Texto">
+        <Translation Language="GB">&lt;value&gt;</Translation>
+      </Text>
+      <Text Id="__SingleUse_H14G" Alignment="Right" TypographyId="Prueba_Texto">
+        <Translation Language="GB">&lt;&gt;</Translation>
+      </Text>
+      <Text Id="label_graph1" Alignment="Left" TypographyId="Prueba_Texto">
+        <Translation Language="GB">&lt;hola&gt;</Translation>
+      </Text>
+    </TextGroup>
+  </Texts>
+  <Typographies>
+    <Typography Id="Default" Font="verdana.ttf" Size="20" Bpp="4" Direction="LTR" FallbackCharacter="?" />
+    <Typography Id="Large" Font="verdana.ttf" Size="40" Bpp="4" Direction="LTR" FallbackCharacter="?" />
+    <Typography Id="Small" Font="verdana.ttf" Size="10" Bpp="4" Direction="LTR" FallbackCharacter="?" />
+    <Typography Id="Prueba_Texto" Font="calibrib.ttf" Size="10" Bpp="4" Direction="LTR" FallbackCharacter="?" WildcardCharacters="Γ" WidgetWildcardCharacters="-., 0123456789" WildcardCharacterRanges="0x0000-0xFFFF,0xCE93" />
+  </Typographies>
+</TextDatabase>

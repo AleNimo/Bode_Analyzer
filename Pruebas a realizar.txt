@@ -1,3 +1,9 @@
--Medir offset operacionales para decidir si hace falta agregar preset de corrección.
+-Definir el reset del cap del detector de pico (El micro se la aguanta?)
+-Actualizar rectangulos chicos de la pantalla
+
+
+
+
+
 -Ensayar error de detector de pico a distintas frecuencias y tener esos datos.
 -Ensayar transferencia de ADC de NUCLEO-F401RE.
