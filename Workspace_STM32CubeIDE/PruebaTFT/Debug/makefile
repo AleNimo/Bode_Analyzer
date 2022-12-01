@@ -110,7 +110,7 @@ main-build: PruebaTFT.elf secondary-outputs
 
 # Tool invocations
 PruebaTFT.elf PruebaTFT.map: $(OBJS) $(USER_OBJS) D:\UTN\Nivel_4\Tecnicas_Digitales_2\Bode_Analyzer\Workspace_STM32CubeIDE\PruebaTFT\STM32F401RETX_FLASH.ld makefile objects.list $(OPTIONAL_TOOL_DEPS)
-	arm-none-eabi-g++ -o "PruebaTFT.elf" @"objects.list" $(USER_OBJS) $(LIBS) -mcpu=cortex-m4 -T"D:\UTN\Nivel_4\Tecnicas_Digitales_2\Bode_Analyzer\Workspace_STM32CubeIDE\PruebaTFT\STM32F401RETX_FLASH.ld" -Wl,-Map="PruebaTFT.map" -Wl,--gc-sections -static -L"D:\UTN\Nivel_4\Tecnicas_Digitales_2\Bode_Analyzer\Workspace_STM32CubeIDE\PruebaTFT\Middlewares\ST\touchgfx\lib\core\cortex_m4f\gcc" --specs=nano.specs -mfpu=fpv4-sp-d16 -mfloat-abi=hard -mthumb -u _printf_float -Wl,--start-group -lc -lm -lstdc++ -lsupc++ -Wl,--end-group
+	arm-none-eabi-g++ -o "PruebaTFT.elf" @"objects.list" $(USER_OBJS) $(LIBS) -mcpu=cortex-m4 -T"D:\UTN\Nivel_4\Tecnicas_Digitales_2\Bode_Analyzer\Workspace_STM32CubeIDE\PruebaTFT\STM32F401RETX_FLASH.ld" --specs=nosys.specs -Wl,-Map="PruebaTFT.map" -Wl,--gc-sections -static -L"D:\UTN\Nivel_4\Tecnicas_Digitales_2\Bode_Analyzer\Workspace_STM32CubeIDE\PruebaTFT\Middlewares\ST\touchgfx\lib\core\cortex_m4f\gcc" --specs=nano.specs -mfpu=fpv4-sp-d16 -mfloat-abi=hard -mthumb -Wl,--start-group -lc -lm -lstdc++ -lsupc++ -Wl,--end-group
 	@echo 'Finished building target: $@'
 	@echo ' '
 
