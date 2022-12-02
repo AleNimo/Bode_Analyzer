@@ -28,7 +28,6 @@ public:
     virtual ~GraficoPresenter() {};
 
     virtual void write(float* freq,float*mag,float*phase,unsigned int num_points);
-    virtual void Freq_Config_Presenter(float freq_min, float freq_max, unsigned int points_decade);
 
 
 private:

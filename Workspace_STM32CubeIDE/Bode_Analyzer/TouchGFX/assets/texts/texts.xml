@@ -6,11 +6,14 @@
   <Texts>
     <TextGroup Id="Group1" />
     <TextGroup Id="Unsorted">
-      <Text Id="__SingleUse_CYOR" Alignment="Right" TypographyId="Prueba_Texto">
-        <Translation Language="GB">&lt;&gt;</Translation>
-      </Text>
       <Text Id="__SingleUse_K25R" Alignment="Left" TypographyId="Prueba_Texto">
         <Translation Language="GB">Γ</Translation>
+      </Text>
+      <Text Id="__SingleUse_03NM" Alignment="Center" TypographyId="Default">
+        <Translation Language="GB">Ok</Translation>
+      </Text>
+      <Text Id="__SingleUse_CYOR" Alignment="Right" TypographyId="Prueba_Texto">
+        <Translation Language="GB">&lt;&gt;</Translation>
       </Text>
       <Text Id="text_butt_MAG_PH" Alignment="Center" TypographyId="Prueba_Texto">
         <Translation Language="GB">&lt;value&gt;</Translation>

@@ -2,9 +2,169 @@
   "Application": {
     "Screens": [
       {
-        "Name": "Config_freq",
-        "Components": [],
-        "Interactions": []
+        "Name": "Freq_Config",
+        "Components": [
+          {
+            "Type": "FlexButton",
+            "Name": "buttonEnter_Freq",
+            "X": 243,
+            "Y": 200,
+            "Width": 66,
+            "Height": 35,
+            "ButtonTrigger": {
+              "Type": "ClickButtonTrigger"
+            },
+            "ButtonStyles": [
+              {
+                "Type": "TextButtonStyle",
+                "Y": 4,
+                "TextId": "__SingleUse_03NM",
+                "TextRotation": "0",
+                "ColorReleased": {
+                  "Red": 237,
+                  "Green": 237,
+                  "Blue": 237
+                },
+                "ColorPressed": {
+                  "Red": 173,
+                  "Green": 173,
+                  "Blue": 173
+                }
+              },
+              {
+                "Type": "BoxWithBorderButtonStyle",
+                "Width": 66,
+                "Height": 35,
+                "LockToFlexButtonSize": true,
+                "BorderSize": 2,
+                "ColorReleased": {
+                  "Green": 102,
+                  "Blue": 153
+                },
+                "ColorPressed": {
+                  "Green": 153,
+                  "Blue": 204
+                },
+                "ColorBorderReleased": {
+                  "Green": 51,
+                  "Blue": 102
+                },
+                "ColorBorderPressed": {
+                  "Red": 51,
+                  "Green": 102,
+                  "Blue": 153
+                }
+              }
+            ]
+          },
+          {
+            "Type": "Slider",
+            "Name": "Points_Decade",
+            "Y": 128,
+            "Width": 221,
+            "Height": 56,
+            "IsHorizontalSlider": true,
+            "BackgroundUnselected": "__designer\\Blue_Slider_Horizontal_Small_slider_horizontal_small_round_back.png",
+            "BackgroundSelected": "__designer\\Blue_Slider_Horizontal_Small_slider_horizontal_small_round_fill.png",
+            "Indicator": "__designer\\Blue_Slider_Horizontal_Medium_Indicators_Slider_Round_nob.png",
+            "BackgroundX": 24,
+            "BackgroundY": 22,
+            "IndicatorPos": 7,
+            "IndicatorMax": 173,
+            "ValueMax": 100
+          },
+          {
+            "Type": "Slider",
+            "Name": "Freq_Max",
+            "Y": 64,
+            "Width": 221,
+            "Height": 56,
+            "IsHorizontalSlider": true,
+            "BackgroundUnselected": "__designer\\Blue_Slider_Horizontal_Small_slider_horizontal_small_round_back.png",
+            "BackgroundSelected": "__designer\\Blue_Slider_Horizontal_Small_slider_horizontal_small_round_fill.png",
+            "Indicator": "__designer\\Blue_Slider_Horizontal_Medium_Indicators_Slider_Round_nob.png",
+            "BackgroundX": 24,
+            "BackgroundY": 22,
+            "IndicatorPos": 7,
+            "IndicatorMax": 173,
+            "ValueMax": 600,
+            "InitValue": 300
+          },
+          {
+            "Type": "Slider",
+            "Name": "Freq_Min",
+            "Width": 221,
+            "Height": 56,
+            "IsHorizontalSlider": true,
+            "BackgroundUnselected": "__designer\\Blue_Slider_Horizontal_Small_slider_horizontal_small_round_back.png",
+            "BackgroundSelected": "__designer\\Blue_Slider_Horizontal_Small_slider_horizontal_small_round_fill.png",
+            "Indicator": "__designer\\Blue_Slider_Horizontal_Medium_Indicators_Slider_Round_nob.png",
+            "BackgroundX": 24,
+            "BackgroundY": 22,
+            "IndicatorPos": 7,
+            "IndicatorMax": 173,
+            "ValueMax": 600,
+            "InitValue": 300
+          }
+        ],
+        "Interactions": [
+          {
+            "InteractionName": "Enter_Frequency",
+            "Trigger": {
+              "Type": "TriggerClicked",
+              "TriggerComponent": "buttonEnter_Freq"
+            },
+            "Action": {
+              "Type": "ActionCustom",
+              "FunctionName": "Enter_Freq"
+            }
+          },
+          {
+            "InteractionName": "Change_Screen",
+            "Trigger": {
+              "Type": "TriggerClicked",
+              "TriggerComponent": "buttonEnter_Freq"
+            },
+            "Action": {
+              "Type": "ActionGotoScreen",
+              "ScreenTransitionType": "ScreenTransitionNone",
+              "ActionComponent": "Grafico"
+            }
+          },
+          {
+            "InteractionName": "SliderMin",
+            "Trigger": {
+              "Type": "TriggerSliderValueConfirmed",
+              "TriggerComponent": "Freq_Min"
+            },
+            "Action": {
+              "Type": "ActionCustom",
+              "FunctionName": "SliderSet_Freq_Min"
+            }
+          },
+          {
+            "InteractionName": "SliderMax",
+            "Trigger": {
+              "Type": "TriggerSliderValueConfirmed",
+              "TriggerComponent": "Freq_Max"
+            },
+            "Action": {
+              "Type": "ActionCustom",
+              "FunctionName": "SliderSet_Freq_Max"
+            }
+          },
+          {
+            "InteractionName": "SliderPoints",
+            "Trigger": {
+              "Type": "TriggerSliderValueConfirmed",
+              "TriggerComponent": "Points_Decade"
+            },
+            "Action": {
+              "Type": "ActionCustom",
+              "FunctionName": "SliderSet_PointsDecade"
+            }
+          }
+        ]
       },
       {
         "Name": "Grafico",
@@ -1315,31 +1475,52 @@
             ]
           },
           {
-            "Type": "Button",
-            "Name": "button_Enter_Freq",
-            "X": 53,
-            "Y": -6,
-            "Width": 170,
-            "Height": 60,
-            "Pressed": "__designer\\Blue_Buttons_Round_Edge_small_pressed.png",
-            "Released": "__designer\\Blue_Buttons_Round_Edge_small.png",
-            "Style": "Style4"
+            "Type": "FlexButton",
+            "Name": "buttonFreq_Config",
+            "X": 85,
+            "Y": 11,
+            "Width": 66,
+            "Height": 35,
+            "ButtonTrigger": {
+              "Type": "ClickButtonTrigger"
+            },
+            "ButtonStyles": [
+              {
+                "Type": "IconButtonStyle",
+                "X": 17,
+                "Y": 2,
+                "IconReleased": "__designer\\Blue_Icons_Settings_32.png"
+              },
+              {
+                "Type": "BoxWithBorderButtonStyle",
+                "Width": 66,
+                "Height": 35,
+                "LockToFlexButtonSize": true,
+                "BorderSize": 2,
+                "ColorReleased": {
+                  "Green": 102,
+                  "Blue": 153
+                },
+                "ColorPressed": {
+                  "Green": 153,
+                  "Blue": 204
+                },
+                "ColorBorderReleased": {
+                  "Green": 51,
+                  "Blue": 102
+                },
+                "ColorBorderPressed": {
+                  "Red": 51,
+                  "Green": 102,
+                  "Blue": 153
+                }
+              }
+            ]
           }
         ],
         "Interactions": [
           {
-            "InteractionName": "Interaction1",
-            "Trigger": {
-              "Type": "TriggerClicked",
-              "TriggerComponent": "button_Enter_Freq"
-            },
-            "Action": {
-              "Type": "ActionCustom",
-              "FunctionName": "Enter_Freq"
-            }
-          },
-          {
-            "InteractionName": "Interaction2",
+            "InteractionName": "Toggle_Mag_Phase",
             "Trigger": {
               "Type": "TriggerClicked",
               "TriggerComponent": "buttonMAG_PH"
@@ -1347,6 +1528,18 @@
             "Action": {
               "Type": "ActionCustom",
               "FunctionName": "Toggle_Mag_Phase"
+            }
+          },
+          {
+            "InteractionName": "Change_Screen",
+            "Trigger": {
+              "Type": "TriggerClicked",
+              "TriggerComponent": "buttonFreq_Config"
+            },
+            "Action": {
+              "Type": "ActionGotoScreen",
+              "ScreenTransitionType": "ScreenTransitionNone",
+              "ActionComponent": "Freq_Config"
             }
           }
         ]
@@ -1359,7 +1552,7 @@
       "Height": 240
     },
     "SelectedColorDepth": 16,
-    "StartupScreenName": "Grafico",
+    "StartupScreenName": "Freq_Config",
     "SelectedStartupLanguage": "GB",
     "Skin": "Blue",
     "TouchGfxPath": "../Middlewares/ST/touchgfx",

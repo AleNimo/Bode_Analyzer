@@ -15,14 +15,9 @@ public:
     virtual void setupScreen();
     virtual void tearDownScreen();
 
-    virtual void Enter_Freq();
-
     virtual void DataDisplay(float* freq,float*mag,float*phase,unsigned int num_points);
 
     virtual void Toggle_Mag_Phase();
-private:
-    float range_min;
-    float range_max;
 
 protected:
 
