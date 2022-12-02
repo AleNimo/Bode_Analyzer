@@ -1,5 +1,4 @@
 #include <gui/grafico_screen/GraficoView.hpp>
-#include <cstring>
 #include <cmath>
 #include <string>
 #include <touchgfx/widgets/canvas/Line.hpp>

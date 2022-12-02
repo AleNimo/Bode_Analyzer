@@ -1,13 +1,12 @@
 #include <gui/model/Model.hpp>
 #include <cmath>
 #include <gui/model/ModelListener.hpp>
+
 extern float freq[600];
 extern float mag[600];
 extern float phase[600];
 extern unsigned char data_ready;
 extern unsigned int total_points;
-
-unsigned int flag_terminacion = 0;
 
 Model::Model() : modelListener(0)
 {

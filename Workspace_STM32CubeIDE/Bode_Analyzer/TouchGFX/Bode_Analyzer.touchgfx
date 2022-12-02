@@ -71,7 +71,9 @@
             "BackgroundY": 22,
             "IndicatorPos": 7,
             "IndicatorMax": 173,
-            "ValueMax": 100
+            "ValueMax": 600,
+            "ValueMin": 20,
+            "InitValue": 310
           },
           {
             "Type": "Slider",
@@ -105,6 +107,63 @@
             "IndicatorMax": 173,
             "ValueMax": 600,
             "InitValue": 300
+          },
+          {
+            "Type": "TextArea",
+            "Name": "Fmin",
+            "X": 221,
+            "Y": 19,
+            "Width": 99,
+            "Height": 24,
+            "TextId": "__SingleUse_GE4H",
+            "TextRotation": "0",
+            "Color": {
+              "Red": 237,
+              "Green": 237,
+              "Blue": 237
+            },
+            "Wildcard1": {
+              "UseBuffer": true,
+              "BufferSize": 6
+            }
+          },
+          {
+            "Type": "TextArea",
+            "Name": "Fmax",
+            "X": 221,
+            "Y": 83,
+            "Width": 99,
+            "Height": 23,
+            "TextId": "__SingleUse_BJUT",
+            "TextRotation": "0",
+            "Color": {
+              "Red": 237,
+              "Green": 237,
+              "Blue": 237
+            },
+            "Wildcard1": {
+              "UseBuffer": true,
+              "BufferSize": 6
+            }
+          },
+          {
+            "Type": "TextArea",
+            "Name": "Points",
+            "X": 221,
+            "Y": 147,
+            "Width": 99,
+            "Height": 24,
+            "TextId": "__SingleUse_D5MF",
+            "TextRotation": "0",
+            "Color": {
+              "Red": 237,
+              "Green": 237,
+              "Blue": 237
+            },
+            "Wildcard1": {
+              "UseBuffer": true,
+              "BufferSize": 6
+            }
           }
         ],
         "Interactions": [
@@ -1366,7 +1425,7 @@
           {
             "Type": "StaticGraph",
             "Name": "graphMAG",
-            "Width": 320,
+            "Width": 319,
             "Height": 240,
             "DataSeed": 1144888300,
             "NumberOfValues": 2001,
@@ -1420,7 +1479,6 @@
             "Type": "FlexButton",
             "Name": "buttonMAG_PH",
             "X": 253,
-            "Y": 11,
             "Width": 67,
             "Height": 27,
             "ButtonTrigger": {
@@ -1433,7 +1491,7 @@
                 "TextId": "text_butt_MAG_PH",
                 "TextRotation": "0",
                 "Wildcard1": {
-                  "TextId": "__SingleUse_K25R",
+                  "TextId": "FASE_MAG",
                   "UseBuffer": true,
                   "BufferSize": 10
                 },
@@ -1477,8 +1535,8 @@
           {
             "Type": "FlexButton",
             "Name": "buttonFreq_Config",
-            "X": 85,
-            "Y": 11,
+            "X": 253,
+            "Y": 185,
             "Width": 66,
             "Height": 35,
             "ButtonTrigger": {
@@ -1489,7 +1547,8 @@
                 "Type": "IconButtonStyle",
                 "X": 17,
                 "Y": 2,
-                "IconReleased": "__designer\\Blue_Icons_Settings_32.png"
+                "IconReleased": "__designer\\Blue_Icons_Settings_32.png",
+                "IconPressed": "__designer\\Blue_Icons_Settings_32.png"
               },
               {
                 "Type": "BoxWithBorderButtonStyle",
