@@ -233,8 +233,9 @@
             "Type": "Line",
             "Name": "line_0",
             "X": 30,
+            "Y": 27,
             "Width": 23,
-            "Height": 220,
+            "Height": 193,
             "Color": {
               "Red": 255,
               "Green": 255,
@@ -1371,8 +1372,9 @@
           {
             "Type": "StaticGraph",
             "Name": "graphPH",
+            "Y": 27,
             "Width": 320,
-            "Height": 240,
+            "Height": 213,
             "Visible": false,
             "DataSeed": 1144888300,
             "NumberOfValues": 2001,
@@ -1425,8 +1427,9 @@
           {
             "Type": "StaticGraph",
             "Name": "graphMAG",
-            "Width": 319,
-            "Height": 240,
+            "Y": 27,
+            "Width": 320,
+            "Height": 213,
             "DataSeed": 1144888300,
             "NumberOfValues": 2001,
             "MinX": -1.0,
@@ -1487,7 +1490,7 @@
             "ButtonStyles": [
               {
                 "Type": "TextButtonStyle",
-                "Y": 7,
+                "Y": 3,
                 "TextId": "text_butt_MAG_PH",
                 "TextRotation": "0",
                 "Wildcard1": {
@@ -1535,25 +1538,24 @@
           {
             "Type": "FlexButton",
             "Name": "buttonFreq_Config",
-            "X": 253,
-            "Y": 185,
-            "Width": 66,
-            "Height": 35,
+            "X": 30,
+            "Width": 68,
+            "Height": 27,
             "ButtonTrigger": {
               "Type": "ClickButtonTrigger"
             },
             "ButtonStyles": [
               {
                 "Type": "IconButtonStyle",
-                "X": 17,
-                "Y": 2,
+                "X": 19,
+                "Y": -2,
                 "IconReleased": "__designer\\Blue_Icons_Settings_32.png",
                 "IconPressed": "__designer\\Blue_Icons_Settings_32.png"
               },
               {
                 "Type": "BoxWithBorderButtonStyle",
-                "Width": 66,
-                "Height": 35,
+                "Width": 68,
+                "Height": 27,
                 "LockToFlexButtonSize": true,
                 "BorderSize": 2,
                 "ColorReleased": {

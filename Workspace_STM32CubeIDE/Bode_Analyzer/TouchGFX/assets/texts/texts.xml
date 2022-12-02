@@ -19,7 +19,7 @@
         <Translation Language="GB">Fmin: &lt;value&gt;</Translation>
       </Text>
       <Text Id="FASE_MAG" Alignment="Center" TypographyId="Default">
-        <Translation Language="GB">Γ</Translation>
+        <Translation Language="GB">ϕ</Translation>
       </Text>
       <Text Id="__SingleUse_03NM" Alignment="Center" TypographyId="Default">
         <Translation Language="GB">Ok</Translation>
@@ -27,7 +27,7 @@
       <Text Id="__SingleUse_CYOR" Alignment="Right" TypographyId="Prueba_Texto">
         <Translation Language="GB">&lt;&gt;</Translation>
       </Text>
-      <Text Id="text_butt_MAG_PH" Alignment="Center" TypographyId="Prueba_Texto">
+      <Text Id="text_butt_MAG_PH" Alignment="Center" TypographyId="Fase_Mag">
         <Translation Language="GB">&lt;value&gt;</Translation>
       </Text>
       <Text Id="ResourceId1" Alignment="Left" TypographyId="Prueba_Texto">
@@ -63,7 +63,8 @@
     <Typography Id="Default" Font="verdana.ttf" Size="20" Bpp="4" Direction="LTR" FallbackCharacter="?" />
     <Typography Id="Large" Font="verdana.ttf" Size="40" Bpp="4" Direction="LTR" FallbackCharacter="?" />
     <Typography Id="Small" Font="verdana.ttf" Size="10" Bpp="4" Direction="LTR" FallbackCharacter="?" />
-    <Typography Id="Prueba_Texto" Font="calibrib.ttf" Size="10" Bpp="4" Direction="LTR" FallbackCharacter="?" WildcardCharacters="Γ" WidgetWildcardCharacters="-., 0123456789" WildcardCharacterRanges="0x0000-0xFFFF,0xCE93" />
+    <Typography Id="Prueba_Texto" Font="calibrib.ttf" Size="10" Bpp="4" Direction="LTR" FallbackCharacter="?" WidgetWildcardCharacters="-., 0123456789" WildcardCharacterRanges="0x0000-0xFFFF,0xCE93" />
     <Typography Id="Calibri" Font="calibrib.ttf" Size="20" Bpp="4" Direction="LTR" FallbackCharacter="?" WildcardCharacterRanges="48-90" />
+    <Typography Id="Fase_Mag" Font="calibrib.ttf" Size="14" Bpp="4" Direction="LTR" FallbackCharacter="?" WildcardCharacters="ϕ,|,T" />
   </Typographies>
 </TextDatabase>

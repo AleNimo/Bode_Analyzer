@@ -1,6 +1,7 @@
 #include <gui/grafico_screen/GraficoView.hpp>
 #include <cmath>
 #include <string>
+#include <cstring>
 #include <touchgfx/widgets/canvas/Line.hpp>
 #include <touchgfx/widgets/TextAreaWithWildcard.hpp>
 
@@ -29,14 +30,14 @@ void GraficoView::tearDownScreen()
 
 void GraficoView::Toggle_Mag_Phase()
 {
-	Unicode::UnicodeChar string_aux[3] = {' ','P',' '};
+	Unicode::UnicodeChar string_aux[3];
 
 	static uint8_t type_plot = MAG;
 	if(type_plot == MAG)
 	{
-		string_aux[0]=' ';
-		string_aux[1]='P';
-		string_aux[2]=' ';
+		string_aux[0]='|';
+		string_aux[1]='T';
+		string_aux[2]='|';
 
 		Unicode::strncpy(buttonMAG_PHBuffer, string_aux, 3);
 		buttonMAG_PH.setWildcardTextBuffer(buttonMAG_PHBuffer);
@@ -54,10 +55,9 @@ void GraficoView::Toggle_Mag_Phase()
 	}
 	else
 	{
-		string_aux[0]='|';
-		string_aux[1]='T';
-		string_aux[2]='|';
-		Unicode::strncpy(buttonMAG_PHBuffer, string_aux, 3);
+		memset(buttonMAG_PHBuffer,0,sizeof(buttonMAG_PHBuffer));
+		string_aux[0]=0x03D5; //ϕ
+		Unicode::strncpy(buttonMAG_PHBuffer, string_aux, 1);
 		buttonMAG_PH.invalidate();
 
 		graphMAG.setVisible(true);
