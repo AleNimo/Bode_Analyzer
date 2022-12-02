@@ -15,7 +15,13 @@ public:
     virtual void DataDisplay(float* freq,float*mag,float*phase,unsigned int num_points);
 
     virtual void Toggle_Mag_Phase();
+    virtual void Enter_Freq();
+
+    float range_max;
+    float range_min;
+
 protected:
+
 };
 
 #endif // SCREEN1VIEW_HPP

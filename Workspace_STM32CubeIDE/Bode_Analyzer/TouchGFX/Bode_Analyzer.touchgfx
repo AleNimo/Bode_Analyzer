@@ -2,7 +2,12 @@
   "Application": {
     "Screens": [
       {
-        "Name": "Screen1",
+        "Name": "Config_freq",
+        "Components": [],
+        "Interactions": []
+      },
+      {
+        "Name": "Grafico",
         "CanvasBufferSize": 4800,
         "Components": [
           {
@@ -1027,9 +1032,9 @@
           {
             "Type": "TextArea",
             "Name": "decade_5",
-            "X": 65,
-            "Y": 228,
-            "Width": 20,
+            "X": 10,
+            "Y": 226,
+            "Width": 30,
             "Height": 12,
             "Visible": false,
             "TextId": "__SingleUse_Y3J4",
@@ -1041,7 +1046,7 @@
             },
             "Wildcard1": {
               "UseBuffer": true,
-              "BufferSize": 4
+              "BufferSize": 6
             }
           },
           {
@@ -1049,7 +1054,7 @@
             "Name": "decade_4",
             "X": 10,
             "Y": 226,
-            "Width": 20,
+            "Width": 30,
             "Height": 12,
             "Visible": false,
             "TextId": "__SingleUse_MRIO",
@@ -1061,7 +1066,7 @@
             },
             "Wildcard1": {
               "UseBuffer": true,
-              "BufferSize": 4
+              "BufferSize": 6
             }
           },
           {
@@ -1069,7 +1074,7 @@
             "Name": "decade_3",
             "X": 10,
             "Y": 226,
-            "Width": 20,
+            "Width": 30,
             "Height": 12,
             "Visible": false,
             "TextId": "__SingleUse_X5G6",
@@ -1081,7 +1086,7 @@
             },
             "Wildcard1": {
               "UseBuffer": true,
-              "BufferSize": 4
+              "BufferSize": 6
             }
           },
           {
@@ -1089,7 +1094,7 @@
             "Name": "decade_2",
             "X": 10,
             "Y": 226,
-            "Width": 20,
+            "Width": 30,
             "Height": 12,
             "Visible": false,
             "TextId": "__SingleUse_L2RW",
@@ -1101,7 +1106,7 @@
             },
             "Wildcard1": {
               "UseBuffer": true,
-              "BufferSize": 4
+              "BufferSize": 6
             }
           },
           {
@@ -1109,7 +1114,7 @@
             "Name": "decade_1",
             "X": 10,
             "Y": 226,
-            "Width": 20,
+            "Width": 30,
             "Height": 12,
             "Visible": false,
             "TextId": "__SingleUse_3ZAQ",
@@ -1121,15 +1126,15 @@
             },
             "Wildcard1": {
               "UseBuffer": true,
-              "BufferSize": 4
+              "BufferSize": 6
             }
           },
           {
             "Type": "TextArea",
             "Name": "decade_0",
             "X": 10,
-            "Y": 226,
-            "Width": 20,
+            "Y": 227,
+            "Width": 30,
             "Height": 12,
             "Visible": false,
             "TextId": "__SingleUse_MIDP",
@@ -1141,7 +1146,7 @@
             },
             "Wildcard1": {
               "UseBuffer": true,
-              "BufferSize": 4
+              "BufferSize": 6
             }
           },
           {
@@ -1308,11 +1313,33 @@
                 }
               }
             ]
+          },
+          {
+            "Type": "Button",
+            "Name": "button_Enter_Freq",
+            "X": 53,
+            "Y": -6,
+            "Width": 170,
+            "Height": 60,
+            "Pressed": "__designer\\Blue_Buttons_Round_Edge_small_pressed.png",
+            "Released": "__designer\\Blue_Buttons_Round_Edge_small.png",
+            "Style": "Style4"
           }
         ],
         "Interactions": [
           {
             "InteractionName": "Interaction1",
+            "Trigger": {
+              "Type": "TriggerClicked",
+              "TriggerComponent": "button_Enter_Freq"
+            },
+            "Action": {
+              "Type": "ActionCustom",
+              "FunctionName": "Enter_Freq"
+            }
+          },
+          {
+            "InteractionName": "Interaction2",
             "Trigger": {
               "Type": "TriggerClicked",
               "TriggerComponent": "buttonMAG_PH"
@@ -1332,7 +1359,7 @@
       "Height": 240
     },
     "SelectedColorDepth": 16,
-    "StartupScreenName": "Screen1",
+    "StartupScreenName": "Grafico",
     "SelectedStartupLanguage": "GB",
     "Skin": "Blue",
     "TouchGfxPath": "../Middlewares/ST/touchgfx",

@@ -142,9 +142,6 @@
     <Filter Include="Source Files\gui\model">
       <UniqueIdentifier>BB2EE669-40D8-840A-CC70-1D79AA5B8239</UniqueIdentifier>
     </Filter>
-    <Filter Include="Source Files\gui\screen1_screen">
-      <UniqueIdentifier>27B79D76-8F5D-119F-B857-745D4BC14F3B</UniqueIdentifier>
-    </Filter>
     <Filter Include="Header Files\generated\gui_generated">
       <UniqueIdentifier>7130A01A-B149-0A37-BC95-D4C32278C7E3</UniqueIdentifier>
     </Filter>
@@ -159,12 +156,6 @@
     </Filter>
     <Filter Include="Source Files\gui\common">
       <UniqueIdentifier>A6026B76-FE4B-99F6-5B91-A97121A0DD70</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Source Files\generated\gui_generated\screen1_screen">
-      <UniqueIdentifier>8C9F3C0C-EA2F-7A03-219B-4E78A31E8BF5</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Header Files\generated\gui_generated\screen1_screen">
-      <UniqueIdentifier>42262A1C-FBE8-B4F2-7AE6-7FCCBD3AA636</UniqueIdentifier>
     </Filter>
     <Filter Include="Header Files\generated\simulator\include">
       <UniqueIdentifier>F2975565-26AF-7154-5B7E-79FF389CBD69</UniqueIdentifier>
@@ -183,6 +174,30 @@
     </Filter>
     <Filter Include="Header Files\generated\simulator\include\simulator\video">
       <UniqueIdentifier>003DEAE0-089A-7BD9-84AB-9A6229E5F538</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\gui\grafico_screen">
+      <UniqueIdentifier>21B3EB3E-FD7E-9E9B-A041-EE09B0D2FC47</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\gui\grafico_screen">
+      <UniqueIdentifier>CFB024B3-B41F-F12E-9F61-588CE0CAFD00</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\gui\config_freq_screen">
+      <UniqueIdentifier>8E85F2D8-6C68-9BAB-F9F3-B02594E3A140</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\gui\config_freq_screen">
+      <UniqueIdentifier>C866CF21-92B5-B8DC-DC60-AA021A3ECA4C</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\generated\gui_generated\config_freq_screen">
+      <UniqueIdentifier>EF2A351C-2CB4-05CA-327E-A160F61F62CE</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\generated\gui_generated\grafico_screen">
+      <UniqueIdentifier>A3EB9E7F-8899-0B72-369A-FC4182CFFF78</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\generated\gui_generated\config_freq_screen">
+      <UniqueIdentifier>65C0CB61-0161-81EC-CFC3-5A2331F1E17A</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\generated\gui_generated\grafico_screen">
+      <UniqueIdentifier>C97E93CD-862E-D38A-E335-701A6AB1EC86</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>
@@ -213,17 +228,26 @@
     <ClCompile Include="..\..\gui\src\model\Model.cpp">
       <Filter>Source Files\gui\model</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\gui\src\screen1_screen\Screen1Presenter.cpp">
-      <Filter>Source Files\gui\screen1_screen</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\gui\src\screen1_screen\Screen1View.cpp">
-      <Filter>Source Files\gui\screen1_screen</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\generated\gui_generated\src\screen1_screen\Screen1ViewBase.cpp">
-      <Filter>Source Files\generated\gui_generated\screen1_screen</Filter>
-    </ClCompile>
     <ClCompile Include="..\..\generated\simulator\src\video\SoftwareMJPEGDecoder.cpp">
       <Filter>Source Files\generated\simulator\video</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\gui\src\config_freq_screen\Config_freqPresenter.cpp">
+      <Filter>Source Files\gui\config_freq_screen</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\gui\src\config_freq_screen\Config_freqView.cpp">
+      <Filter>Source Files\gui\config_freq_screen</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\generated\gui_generated\src\config_freq_screen\Config_freqViewBase.cpp">
+      <Filter>Source Files\generated\gui_generated\config_freq_screen</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\gui\src\grafico_screen\GraficoPresenter.cpp">
+      <Filter>Source Files\gui\grafico_screen</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\gui\src\grafico_screen\GraficoView.cpp">
+      <Filter>Source Files\gui\grafico_screen</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\generated\gui_generated\src\grafico_screen\GraficoViewBase.cpp">
+      <Filter>Source Files\generated\gui_generated\grafico_screen</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -667,14 +691,29 @@
     <ClInclude Include="..\..\gui\include\gui\screen1_screen\Screen1View.hpp">
       <Filter>Header Files\gui\screen1_screen</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\generated\gui_generated\include\gui_generated\screen1_screen\Screen1ViewBase.hpp">
-      <Filter>Header Files\generated\gui_generated\screen1_screen</Filter>
-    </ClInclude>
     <ClInclude Include="..\..\generated\gui_generated\include\gui_generated\common\SimConstants.hpp">
       <Filter>Header Files\generated\gui_generated\common</Filter>
     </ClInclude>
     <ClInclude Include="..\..\generated\simulator\include\simulator\video\SoftwareMJPEGDecoder.hpp">
       <Filter>Header Files\generated\simulator\include\simulator\video</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\gui\include\gui\config_freq_screen\Config_freqPresenter.hpp">
+      <Filter>Header Files\gui\config_freq_screen</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\gui\include\gui\config_freq_screen\Config_freqView.hpp">
+      <Filter>Header Files\gui\config_freq_screen</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\generated\gui_generated\include\gui_generated\config_freq_screen\Config_freqViewBase.hpp">
+      <Filter>Header Files\generated\gui_generated\config_freq_screen</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\gui\include\gui\grafico_screen\GraficoPresenter.hpp">
+      <Filter>Header Files\gui\grafico_screen</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\gui\include\gui\grafico_screen\GraficoView.hpp">
+      <Filter>Header Files\gui\grafico_screen</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\generated\gui_generated\include\gui_generated\grafico_screen\GraficoViewBase.hpp">
+      <Filter>Header Files\generated\gui_generated\grafico_screen</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

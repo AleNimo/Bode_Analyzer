@@ -14,6 +14,9 @@ public:
     }
 
     void tick();
+
+    void Freq_Config(float freq_min, float freq_max, unsigned int points_decade);
+
 protected:
     ModelListener* modelListener;
 };

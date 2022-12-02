@@ -61,8 +61,8 @@ const osThreadAttr_t hardwareTask_attributes = {
   .priority = (osPriority_t) osPriorityNormal,
 };
 /* USER CODE BEGIN PV */
-unsigned int num_points = 601;
-float freq[601]={
+float freq[600];
+/*float freq[600]={
 		1,
 		1.02329,
 		1.04713,
@@ -664,8 +664,8 @@ float freq[601]={
 		954993,
 		977237,
 		1000000};
-
-	float mag [601]= {
+*/
+	float mag [600]= {
 			-0.000394776,
 			-0.000413381,
 			-0.000432863,
@@ -1265,9 +1265,8 @@ float freq[601]={
 			-173.071,
 			-173.531,
 			-173.992,
-			-174.452,
-			-174.913};
-	float phase[2001]=
+			-174.452};
+	float phase[600]=
 	{
 			-0.0062831,
 			-0.00642945,
@@ -1868,9 +1867,10 @@ float freq[601]={
 			-1.57062,
 			-1.57063,
 			-1.57063,
-			-1.57063,
-			-1.57064};
+			-1.57063};
 
+unsigned char data_ready = 0;
+unsigned int total_points = 0;
 /* USER CODE END PV */
 
 /* Private function prototypes -----------------------------------------------*/

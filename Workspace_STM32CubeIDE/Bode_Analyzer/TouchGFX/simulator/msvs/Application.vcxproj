@@ -20,10 +20,13 @@
     <ClCompile Include="..\..\gui\src\common\FrontendApplication.cpp"/>
     <ClCompile Include="..\..\generated\gui_generated\src\common\FrontendApplicationBase.cpp"/>
     <ClCompile Include="..\..\gui\src\model\Model.cpp"/>
-    <ClCompile Include="..\..\gui\src\screen1_screen\Screen1Presenter.cpp"/>
-    <ClCompile Include="..\..\gui\src\screen1_screen\Screen1View.cpp"/>
-    <ClCompile Include="..\..\generated\gui_generated\src\screen1_screen\Screen1ViewBase.cpp"/>
     <ClCompile Include="..\..\generated\simulator\src\video\SoftwareMJPEGDecoder.cpp"/>
+    <ClCompile Include="..\..\gui\src\config_freq_screen\Config_freqPresenter.cpp"/>
+    <ClCompile Include="..\..\gui\src\config_freq_screen\Config_freqView.cpp"/>
+    <ClCompile Include="..\..\generated\gui_generated\src\config_freq_screen\Config_freqViewBase.cpp"/>
+    <ClCompile Include="..\..\gui\src\grafico_screen\GraficoPresenter.cpp"/>
+    <ClCompile Include="..\..\gui\src\grafico_screen\GraficoView.cpp"/>
+    <ClCompile Include="..\..\generated\gui_generated\src\grafico_screen\GraficoViewBase.cpp"/>
   </ItemGroup>
   <ItemGroup>
     <None Include="$(ApplicationRoot)\assets\texts\texts.xml"/>
@@ -174,9 +177,14 @@
     <ClInclude Include="..\..\gui\include\gui\model\ModelListener.hpp"/>
     <ClInclude Include="..\..\gui\include\gui\screen1_screen\Screen1Presenter.hpp"/>
     <ClInclude Include="..\..\gui\include\gui\screen1_screen\Screen1View.hpp"/>
-    <ClInclude Include="..\..\generated\gui_generated\include\gui_generated\screen1_screen\Screen1ViewBase.hpp"/>
     <ClInclude Include="..\..\generated\gui_generated\include\gui_generated\common\SimConstants.hpp"/>
     <ClInclude Include="..\..\generated\simulator\include\simulator\video\SoftwareMJPEGDecoder.hpp"/>
+    <ClInclude Include="..\..\gui\include\gui\config_freq_screen\Config_freqPresenter.hpp"/>
+    <ClInclude Include="..\..\gui\include\gui\config_freq_screen\Config_freqView.hpp"/>
+    <ClInclude Include="..\..\generated\gui_generated\include\gui_generated\config_freq_screen\Config_freqViewBase.hpp"/>
+    <ClInclude Include="..\..\gui\include\gui\grafico_screen\GraficoPresenter.hpp"/>
+    <ClInclude Include="..\..\gui\include\gui\grafico_screen\GraficoView.hpp"/>
+    <ClInclude Include="..\..\generated\gui_generated\include\gui_generated\grafico_screen\GraficoViewBase.hpp"/>
   </ItemGroup>
   <ItemGroup>
     <ResourceCompile Include="$(ApplicationRoot)\generated\simulator\touchgfx.rc"/>
