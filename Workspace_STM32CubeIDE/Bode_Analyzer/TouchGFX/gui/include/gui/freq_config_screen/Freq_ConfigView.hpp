@@ -12,6 +12,7 @@ public:
     virtual void setupScreen();
     virtual void tearDownScreen();
 
+    virtual void Check_Frequencies(void);
 
     virtual void SliderSet_Freq_Min(int value);
     virtual void SliderSet_Freq_Max(int value);
@@ -21,7 +22,6 @@ public:
 
     float freq_max;
 	float freq_min;
-	unsigned int points_decade;
 
 protected:
 };

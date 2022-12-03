@@ -43,6 +43,12 @@ void GraficoView::Toggle_Mag_Phase()
 		buttonMAG_PH.setWildcardTextBuffer(buttonMAG_PHBuffer);
 		buttonMAG_PH.invalidate();
 
+		textFase.setVisible(true);
+		textFase.invalidate();
+
+		textModulo.setVisible(false);
+		textModulo.invalidate();
+
 		graphMAG.setVisible(false);
 		graphMAG.invalidate();
 
@@ -59,6 +65,12 @@ void GraficoView::Toggle_Mag_Phase()
 		string_aux[0]=0x03D5; //ϕ
 		Unicode::strncpy(buttonMAG_PHBuffer, string_aux, 1);
 		buttonMAG_PH.invalidate();
+
+		textFase.setVisible(false);
+		textFase.invalidate();
+
+		textModulo.setVisible(true);
+		textModulo.invalidate();
 
 		graphMAG.setVisible(true);
 		graphMAG.invalidate();
@@ -88,7 +100,7 @@ void GraficoView::DataDisplay(float* freq,float*mag,float*phase,unsigned int num
 	static float ymin_phase;
 	static float ymax_phase;
 
-	static float decades = log10((double)range_max/range_min);
+	float decades = log10(range_max/range_min);
 
 	uint8_t divs_vertical = 10;
 
@@ -220,6 +232,7 @@ void GraficoView::DataDisplay(float* freq,float*mag,float*phase,unsigned int num
 		}else
 			sprintf(freq_string, "%d", (int)(range_min*pow(10,i)));
 
+		memset(freq_label_buffer[i],0,sizeof(freq_label_buffer[i]));
 		Unicode::strncpy(freq_label_buffer[i], freq_string, Unicode::strlen(freq_string));
 		//textArea1.resizeToCurrentText();
 		freq_label[i]->setX((320-30)/decades*(i)+30-15);

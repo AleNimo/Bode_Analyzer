@@ -59,7 +59,7 @@
           },
           {
             "Type": "Slider",
-            "Name": "Points_Decade",
+            "Name": "sliderPoints_Decade",
             "Y": 128,
             "Width": 221,
             "Height": 56,
@@ -73,11 +73,11 @@
             "IndicatorMax": 173,
             "ValueMax": 600,
             "ValueMin": 20,
-            "InitValue": 310
+            "InitValue": 20
           },
           {
             "Type": "Slider",
-            "Name": "Freq_Max",
+            "Name": "sliderFreq_Max",
             "Y": 64,
             "Width": 221,
             "Height": 56,
@@ -89,12 +89,11 @@
             "BackgroundY": 22,
             "IndicatorPos": 7,
             "IndicatorMax": 173,
-            "ValueMax": 600,
-            "InitValue": 300
+            "ValueMax": 600
           },
           {
             "Type": "Slider",
-            "Name": "Freq_Min",
+            "Name": "sliderFreq_Min",
             "Width": 221,
             "Height": 56,
             "IsHorizontalSlider": true,
@@ -105,12 +104,11 @@
             "BackgroundY": 22,
             "IndicatorPos": 7,
             "IndicatorMax": 173,
-            "ValueMax": 600,
-            "InitValue": 300
+            "ValueMax": 600
           },
           {
             "Type": "TextArea",
-            "Name": "Fmin",
+            "Name": "labelFmin",
             "X": 221,
             "Y": 19,
             "Width": 99,
@@ -129,7 +127,7 @@
           },
           {
             "Type": "TextArea",
-            "Name": "Fmax",
+            "Name": "labelFmax",
             "X": 221,
             "Y": 83,
             "Width": 99,
@@ -148,7 +146,7 @@
           },
           {
             "Type": "TextArea",
-            "Name": "Points",
+            "Name": "labelPoints",
             "X": 221,
             "Y": 147,
             "Width": 99,
@@ -164,6 +162,36 @@
               "UseBuffer": true,
               "BufferSize": 6
             }
+          },
+          {
+            "Type": "TextArea",
+            "Name": "textErrorFreq",
+            "X": 20,
+            "Y": 205,
+            "Width": 180,
+            "Height": 24,
+            "Visible": false,
+            "TextId": "Error",
+            "TextRotation": "0",
+            "Color": {
+              "Red": 163
+            },
+            "AutoSize": true
+          },
+          {
+            "Type": "Box",
+            "Name": "boxGreyButton",
+            "X": 243,
+            "Y": 200,
+            "Width": 66,
+            "Height": 35,
+            "Visible": false,
+            "Color": {
+              "Red": 38,
+              "Green": 5,
+              "Blue": 5
+            },
+            "Alpha": 175
           }
         ],
         "Interactions": [
@@ -193,8 +221,8 @@
           {
             "InteractionName": "SliderMin",
             "Trigger": {
-              "Type": "TriggerSliderValueConfirmed",
-              "TriggerComponent": "Freq_Min"
+              "Type": "TriggerSliderValueChanged",
+              "TriggerComponent": "sliderFreq_Min"
             },
             "Action": {
               "Type": "ActionCustom",
@@ -204,8 +232,8 @@
           {
             "InteractionName": "SliderMax",
             "Trigger": {
-              "Type": "TriggerSliderValueConfirmed",
-              "TriggerComponent": "Freq_Max"
+              "Type": "TriggerSliderValueChanged",
+              "TriggerComponent": "sliderFreq_Max"
             },
             "Action": {
               "Type": "ActionCustom",
@@ -215,8 +243,8 @@
           {
             "InteractionName": "SliderPoints",
             "Trigger": {
-              "Type": "TriggerSliderValueConfirmed",
-              "TriggerComponent": "Points_Decade"
+              "Type": "TriggerSliderValueChanged",
+              "TriggerComponent": "sliderPoints_Decade"
             },
             "Action": {
               "Type": "ActionCustom",
@@ -250,8 +278,9 @@
             "Type": "Line",
             "Name": "line_1",
             "X": 204,
+            "Y": 27,
             "Width": 23,
-            "Height": 220,
+            "Height": 193,
             "Visible": false,
             "Color": {
               "Red": 255,
@@ -267,8 +296,9 @@
             "Type": "Line",
             "Name": "line_2",
             "X": 204,
+            "Y": 27,
             "Width": 23,
-            "Height": 220,
+            "Height": 193,
             "Visible": false,
             "Color": {
               "Red": 255,
@@ -284,8 +314,9 @@
             "Type": "Line",
             "Name": "line_3",
             "X": 204,
+            "Y": 27,
             "Width": 23,
-            "Height": 220,
+            "Height": 193,
             "Visible": false,
             "Color": {
               "Red": 255,
@@ -301,8 +332,9 @@
             "Type": "Line",
             "Name": "line_4",
             "X": 204,
+            "Y": 27,
             "Width": 23,
-            "Height": 220,
+            "Height": 193,
             "Visible": false,
             "Color": {
               "Red": 255,
@@ -318,8 +350,9 @@
             "Type": "Line",
             "Name": "line_5",
             "X": 204,
+            "Y": 27,
             "Width": 23,
-            "Height": 220,
+            "Height": 193,
             "Visible": false,
             "Color": {
               "Red": 255,
@@ -335,8 +368,9 @@
             "Type": "Line",
             "Name": "line_6",
             "X": 204,
+            "Y": 27,
             "Width": 23,
-            "Height": 220,
+            "Height": 193,
             "Visible": false,
             "Color": {
               "Red": 255,
@@ -352,8 +386,9 @@
             "Type": "Line",
             "Name": "line_7",
             "X": 204,
+            "Y": 27,
             "Width": 23,
-            "Height": 220,
+            "Height": 193,
             "Visible": false,
             "Color": {
               "Red": 255,
@@ -369,8 +404,9 @@
             "Type": "Line",
             "Name": "line_8",
             "X": 204,
+            "Y": 27,
             "Width": 23,
-            "Height": 220,
+            "Height": 193,
             "Visible": false,
             "Color": {
               "Red": 255,
@@ -386,8 +422,9 @@
             "Type": "Line",
             "Name": "line_9",
             "X": 204,
+            "Y": 27,
             "Width": 23,
-            "Height": 220,
+            "Height": 193,
             "Visible": false,
             "Color": {
               "Red": 255,
@@ -403,8 +440,9 @@
             "Type": "Line",
             "Name": "line_10",
             "X": 204,
+            "Y": 27,
             "Width": 23,
-            "Height": 220,
+            "Height": 193,
             "Visible": false,
             "Color": {
               "Red": 255,
@@ -420,8 +458,9 @@
             "Type": "Line",
             "Name": "line_11",
             "X": 204,
+            "Y": 27,
             "Width": 23,
-            "Height": 220,
+            "Height": 193,
             "Visible": false,
             "Color": {
               "Red": 255,
@@ -437,8 +476,9 @@
             "Type": "Line",
             "Name": "line_12",
             "X": 204,
+            "Y": 27,
             "Width": 23,
-            "Height": 220,
+            "Height": 193,
             "Visible": false,
             "Color": {
               "Red": 255,
@@ -454,8 +494,9 @@
             "Type": "Line",
             "Name": "line_13",
             "X": 204,
+            "Y": 27,
             "Width": 23,
-            "Height": 220,
+            "Height": 193,
             "Visible": false,
             "Color": {
               "Red": 255,
@@ -471,8 +512,9 @@
             "Type": "Line",
             "Name": "line_14",
             "X": 204,
+            "Y": 27,
             "Width": 23,
-            "Height": 220,
+            "Height": 193,
             "Visible": false,
             "Color": {
               "Red": 255,
@@ -488,8 +530,9 @@
             "Type": "Line",
             "Name": "line_15",
             "X": 204,
+            "Y": 27,
             "Width": 23,
-            "Height": 220,
+            "Height": 193,
             "Visible": false,
             "Color": {
               "Red": 255,
@@ -505,8 +548,9 @@
             "Type": "Line",
             "Name": "line_16",
             "X": 204,
+            "Y": 27,
             "Width": 23,
-            "Height": 220,
+            "Height": 193,
             "Visible": false,
             "Color": {
               "Red": 255,
@@ -522,8 +566,9 @@
             "Type": "Line",
             "Name": "line_17",
             "X": 204,
+            "Y": 27,
             "Width": 23,
-            "Height": 220,
+            "Height": 193,
             "Visible": false,
             "Color": {
               "Red": 255,
@@ -539,8 +584,9 @@
             "Type": "Line",
             "Name": "line_18",
             "X": 204,
+            "Y": 27,
             "Width": 23,
-            "Height": 220,
+            "Height": 193,
             "Visible": false,
             "Color": {
               "Red": 255,
@@ -556,8 +602,9 @@
             "Type": "Line",
             "Name": "line_19",
             "X": 204,
+            "Y": 27,
             "Width": 23,
-            "Height": 220,
+            "Height": 193,
             "Visible": false,
             "Color": {
               "Red": 255,
@@ -573,8 +620,9 @@
             "Type": "Line",
             "Name": "line_20",
             "X": 204,
+            "Y": 27,
             "Width": 23,
-            "Height": 220,
+            "Height": 193,
             "Visible": false,
             "Color": {
               "Red": 255,
@@ -590,8 +638,9 @@
             "Type": "Line",
             "Name": "line_21",
             "X": 204,
+            "Y": 27,
             "Width": 23,
-            "Height": 220,
+            "Height": 193,
             "Visible": false,
             "Color": {
               "Red": 255,
@@ -607,8 +656,9 @@
             "Type": "Line",
             "Name": "line_22",
             "X": 204,
+            "Y": 27,
             "Width": 23,
-            "Height": 220,
+            "Height": 193,
             "Visible": false,
             "Color": {
               "Red": 255,
@@ -624,8 +674,9 @@
             "Type": "Line",
             "Name": "line_23",
             "X": 204,
+            "Y": 27,
             "Width": 23,
-            "Height": 220,
+            "Height": 193,
             "Visible": false,
             "Color": {
               "Red": 255,
@@ -641,8 +692,9 @@
             "Type": "Line",
             "Name": "line_24",
             "X": 204,
+            "Y": 27,
             "Width": 23,
-            "Height": 220,
+            "Height": 193,
             "Visible": false,
             "Color": {
               "Red": 255,
@@ -658,8 +710,9 @@
             "Type": "Line",
             "Name": "line_25",
             "X": 204,
+            "Y": 27,
             "Width": 23,
-            "Height": 220,
+            "Height": 193,
             "Visible": false,
             "Color": {
               "Red": 255,
@@ -675,8 +728,9 @@
             "Type": "Line",
             "Name": "line_26",
             "X": 204,
+            "Y": 27,
             "Width": 23,
-            "Height": 220,
+            "Height": 193,
             "Visible": false,
             "Color": {
               "Red": 255,
@@ -692,8 +746,9 @@
             "Type": "Line",
             "Name": "line_27",
             "X": 204,
+            "Y": 27,
             "Width": 23,
-            "Height": 220,
+            "Height": 193,
             "Visible": false,
             "Color": {
               "Red": 255,
@@ -709,8 +764,9 @@
             "Type": "Line",
             "Name": "line_28",
             "X": 204,
+            "Y": 27,
             "Width": 23,
-            "Height": 220,
+            "Height": 193,
             "Visible": false,
             "Color": {
               "Red": 255,
@@ -726,8 +782,9 @@
             "Type": "Line",
             "Name": "line_29",
             "X": 204,
+            "Y": 27,
             "Width": 23,
-            "Height": 220,
+            "Height": 193,
             "Visible": false,
             "Color": {
               "Red": 255,
@@ -743,8 +800,9 @@
             "Type": "Line",
             "Name": "line_30",
             "X": 204,
+            "Y": 27,
             "Width": 23,
-            "Height": 220,
+            "Height": 193,
             "Visible": false,
             "Color": {
               "Red": 255,
@@ -760,8 +818,9 @@
             "Type": "Line",
             "Name": "line_31",
             "X": 204,
+            "Y": 27,
             "Width": 23,
-            "Height": 220,
+            "Height": 193,
             "Visible": false,
             "Color": {
               "Red": 255,
@@ -777,8 +836,9 @@
             "Type": "Line",
             "Name": "line_32",
             "X": 204,
+            "Y": 27,
             "Width": 23,
-            "Height": 220,
+            "Height": 193,
             "Visible": false,
             "Color": {
               "Red": 255,
@@ -794,8 +854,9 @@
             "Type": "Line",
             "Name": "line_33",
             "X": 204,
+            "Y": 27,
             "Width": 23,
-            "Height": 220,
+            "Height": 193,
             "Visible": false,
             "Color": {
               "Red": 255,
@@ -811,8 +872,9 @@
             "Type": "Line",
             "Name": "line_34",
             "X": 204,
+            "Y": 27,
             "Width": 23,
-            "Height": 220,
+            "Height": 193,
             "Visible": false,
             "Color": {
               "Red": 255,
@@ -828,8 +890,9 @@
             "Type": "Line",
             "Name": "line_35",
             "X": 204,
+            "Y": 27,
             "Width": 23,
-            "Height": 220,
+            "Height": 193,
             "Visible": false,
             "Color": {
               "Red": 255,
@@ -845,8 +908,9 @@
             "Type": "Line",
             "Name": "line_36",
             "X": 204,
+            "Y": 27,
             "Width": 23,
-            "Height": 220,
+            "Height": 193,
             "Visible": false,
             "Color": {
               "Red": 255,
@@ -862,8 +926,9 @@
             "Type": "Line",
             "Name": "line_37",
             "X": 204,
+            "Y": 27,
             "Width": 23,
-            "Height": 220,
+            "Height": 193,
             "Visible": false,
             "Color": {
               "Red": 255,
@@ -879,8 +944,9 @@
             "Type": "Line",
             "Name": "line_38",
             "X": 204,
+            "Y": 27,
             "Width": 23,
-            "Height": 220,
+            "Height": 193,
             "Visible": false,
             "Color": {
               "Red": 255,
@@ -896,8 +962,9 @@
             "Type": "Line",
             "Name": "line_39",
             "X": 204,
+            "Y": 27,
             "Width": 23,
-            "Height": 220,
+            "Height": 193,
             "Visible": false,
             "Color": {
               "Red": 255,
@@ -913,8 +980,9 @@
             "Type": "Line",
             "Name": "line_40",
             "X": 204,
+            "Y": 27,
             "Width": 23,
-            "Height": 220,
+            "Height": 193,
             "Visible": false,
             "Color": {
               "Red": 255,
@@ -930,8 +998,9 @@
             "Type": "Line",
             "Name": "line_41",
             "X": 204,
+            "Y": 27,
             "Width": 23,
-            "Height": 220,
+            "Height": 193,
             "Visible": false,
             "Color": {
               "Red": 255,
@@ -947,8 +1016,9 @@
             "Type": "Line",
             "Name": "line_42",
             "X": 204,
+            "Y": 27,
             "Width": 23,
-            "Height": 220,
+            "Height": 193,
             "Visible": false,
             "Color": {
               "Red": 255,
@@ -964,8 +1034,9 @@
             "Type": "Line",
             "Name": "line_43",
             "X": 204,
+            "Y": 27,
             "Width": 23,
-            "Height": 220,
+            "Height": 193,
             "Visible": false,
             "Color": {
               "Red": 255,
@@ -981,8 +1052,9 @@
             "Type": "Line",
             "Name": "line_44",
             "X": 204,
+            "Y": 27,
             "Width": 23,
-            "Height": 220,
+            "Height": 193,
             "Visible": false,
             "Color": {
               "Red": 255,
@@ -998,8 +1070,9 @@
             "Type": "Line",
             "Name": "line_45",
             "X": 204,
+            "Y": 27,
             "Width": 23,
-            "Height": 220,
+            "Height": 193,
             "Visible": false,
             "Color": {
               "Red": 255,
@@ -1015,8 +1088,9 @@
             "Type": "Line",
             "Name": "line_46",
             "X": 204,
+            "Y": 27,
             "Width": 23,
-            "Height": 220,
+            "Height": 193,
             "Visible": false,
             "Color": {
               "Red": 255,
@@ -1032,8 +1106,9 @@
             "Type": "Line",
             "Name": "line_47",
             "X": 204,
+            "Y": 27,
             "Width": 23,
-            "Height": 220,
+            "Height": 193,
             "Visible": false,
             "Color": {
               "Red": 255,
@@ -1049,8 +1124,9 @@
             "Type": "Line",
             "Name": "line_48",
             "X": 204,
+            "Y": 27,
             "Width": 23,
-            "Height": 220,
+            "Height": 193,
             "Visible": false,
             "Color": {
               "Red": 255,
@@ -1066,8 +1142,9 @@
             "Type": "Line",
             "Name": "line_49",
             "X": 204,
+            "Y": 27,
             "Width": 23,
-            "Height": 220,
+            "Height": 193,
             "Visible": false,
             "Color": {
               "Red": 255,
@@ -1083,8 +1160,9 @@
             "Type": "Line",
             "Name": "line_50",
             "X": 204,
+            "Y": 27,
             "Width": 23,
-            "Height": 220,
+            "Height": 193,
             "Visible": false,
             "Color": {
               "Red": 255,
@@ -1100,8 +1178,9 @@
             "Type": "Line",
             "Name": "line_51",
             "X": 204,
+            "Y": 27,
             "Width": 23,
-            "Height": 220,
+            "Height": 193,
             "Visible": false,
             "Color": {
               "Red": 255,
@@ -1117,8 +1196,9 @@
             "Type": "Line",
             "Name": "line_52",
             "X": 204,
+            "Y": 27,
             "Width": 23,
-            "Height": 220,
+            "Height": 193,
             "Visible": false,
             "Color": {
               "Red": 255,
@@ -1134,8 +1214,9 @@
             "Type": "Line",
             "Name": "line_53",
             "X": 204,
+            "Y": 27,
             "Width": 23,
-            "Height": 220,
+            "Height": 193,
             "Visible": false,
             "Color": {
               "Red": 255,
@@ -1151,8 +1232,9 @@
             "Type": "Line",
             "Name": "line_54",
             "X": 204,
+            "Y": 27,
             "Width": 23,
-            "Height": 220,
+            "Height": 193,
             "Visible": false,
             "Color": {
               "Red": 255,
@@ -1168,8 +1250,9 @@
             "Type": "Line",
             "Name": "line_55",
             "X": 204,
+            "Y": 27,
             "Width": 23,
-            "Height": 220,
+            "Height": 193,
             "Visible": false,
             "Color": {
               "Red": 255,
@@ -1185,8 +1268,9 @@
             "Type": "Line",
             "Name": "line_56",
             "X": 204,
+            "Y": 27,
             "Width": 23,
-            "Height": 220,
+            "Height": 193,
             "Visible": false,
             "Color": {
               "Red": 255,
@@ -1202,8 +1286,9 @@
             "Type": "Line",
             "Name": "line_57",
             "X": 204,
+            "Y": 27,
             "Width": 23,
-            "Height": 220,
+            "Height": 193,
             "Visible": false,
             "Color": {
               "Red": 255,
@@ -1219,8 +1304,9 @@
             "Type": "Line",
             "Name": "line_58",
             "X": 204,
+            "Y": 27,
             "Width": 23,
-            "Height": 220,
+            "Height": 193,
             "Visible": false,
             "Color": {
               "Red": 255,
@@ -1236,8 +1322,9 @@
             "Type": "Line",
             "Name": "line_59",
             "X": 204,
+            "Y": 27,
             "Width": 23,
-            "Height": 220,
+            "Height": 193,
             "Visible": false,
             "Color": {
               "Red": 255,
@@ -1538,7 +1625,6 @@
           {
             "Type": "FlexButton",
             "Name": "buttonFreq_Config",
-            "X": 30,
             "Width": 68,
             "Height": 27,
             "ButtonTrigger": {
@@ -1577,6 +1663,39 @@
                 }
               }
             ]
+          },
+          {
+            "Type": "TextArea",
+            "Name": "textFase",
+            "X": 120,
+            "Y": 1,
+            "Width": 81,
+            "Height": 24,
+            "Visible": false,
+            "TextId": "__SingleUse_2J35",
+            "TextRotation": "0",
+            "Color": {
+              "Red": 237,
+              "Green": 237,
+              "Blue": 237
+            },
+            "AutoSize": true
+          },
+          {
+            "Type": "TextArea",
+            "Name": "textModulo",
+            "X": 108,
+            "Y": 1,
+            "Width": 105,
+            "Height": 24,
+            "TextId": "__SingleUse_O5AD",
+            "TextRotation": "0",
+            "Color": {
+              "Red": 237,
+              "Green": 237,
+              "Blue": 237
+            },
+            "AutoSize": true
           }
         ],
         "Interactions": [

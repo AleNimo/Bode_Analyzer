@@ -9,18 +9,18 @@
 
 void LCD_Write(uint16_t word)
 {
-	HAL_GPIO_WritePin(LCD_WR_GPIO_Port, LCD_WR_Pin, 0);
+	LCD_WR_GPIO_Port->BSRR = (uint32_t)LCD_WR_Pin << 16U;	//pin en 0
 
 	GPIOC->ODR = ((GPIOC->ODR) & 0xFFFFE000) | (word & 0x1FFF); // bits 0 a 12 de word
 	GPIOB->ODR = ((GPIOB->ODR) & 0xFFFFFFF8) | (word >>13); // bits 13 a 15 de word
 
-	HAL_GPIO_WritePin(LCD_WR_GPIO_Port, LCD_WR_Pin, 1);
+	LCD_WR_GPIO_Port->BSRR = LCD_WR_Pin; //pin en 1
 
 }
 
 void LCD_Command_Write(uint16_t command)
 {
-	HAL_GPIO_WritePin(LCD_RS_GPIO_Port, LCD_RS_Pin, 0);
+	LCD_RS_GPIO_Port->BSRR = (uint32_t)LCD_RS_Pin << 16U;	//pin en 0
 
 	LCD_Write(command);
 
@@ -28,7 +28,7 @@ void LCD_Command_Write(uint16_t command)
 
 void LCD_Data_Write(uint16_t data)
 {
-	HAL_GPIO_WritePin(LCD_RS_GPIO_Port, LCD_RS_Pin, 1);
+	LCD_RS_GPIO_Port->BSRR = LCD_RS_Pin; //pin en 1
 
 	LCD_Write(data);
 

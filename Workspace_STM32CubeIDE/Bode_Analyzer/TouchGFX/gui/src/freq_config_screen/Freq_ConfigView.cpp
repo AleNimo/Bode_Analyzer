@@ -2,12 +2,26 @@
 #include <cmath>
 #include <string>
 #include <cstring>
+
+#define ROUND_TO_INT(x) ((unsigned int)((x)+0.5))
+
 unsigned long range_min;
 unsigned long range_max;
 
+unsigned int value_sliderFmin = 200;
+unsigned int value_sliderFmax = 400;
+unsigned int value_sliderPoints = 20;
+
 Freq_ConfigView::Freq_ConfigView()
 {
+	sliderFreq_Min.setValue(value_sliderFmin);
+	SliderSet_Freq_Min(value_sliderFmin);
 
+	sliderFreq_Max.setValue(value_sliderFmax);
+	SliderSet_Freq_Max(value_sliderFmax);
+
+	sliderPoints_Decade.setValue(value_sliderPoints);
+	SliderSet_PointsDecade(value_sliderPoints);
 }
 
 void Freq_ConfigView::setupScreen()
@@ -20,45 +34,80 @@ void Freq_ConfigView::tearDownScreen()
     Freq_ConfigViewBase::tearDownScreen();
 }
 
+void Freq_ConfigView::Check_Frequencies()
+{
+	if(value_sliderFmin >= value_sliderFmax)	//Mensaje de error y desabilito boton
+	{
+		if(textErrorFreq.isVisible()==false)
+		{
+			textErrorFreq.setVisible(true);
+			textErrorFreq.invalidate();
+
+			buttonEnter_Freq.setTouchable(false);
+
+			boxGreyButton.setVisible(true);
+			boxGreyButton.invalidate();
+		}
+	}
+
+	else if(textErrorFreq.isVisible())	//Si no hay problema y esta el mensaje de error lo saco y habilito el boton
+	{
+		textErrorFreq.setVisible(false);
+		textErrorFreq.invalidate();
+
+		buttonEnter_Freq.setTouchable(true);
+
+		boxGreyButton.setVisible(false);
+		boxGreyButton.invalidate();
+	}
+}
+
 void Freq_ConfigView::SliderSet_Freq_Min(int value)
 {
 	char aux_string[6];
 
-	freq_min = pow(10, (float)value/100.0);
+	value_sliderFmin = value;
+
+	Check_Frequencies();
+
+	freq_min = pow(10, (float)value_sliderFmin/100.0);
 
 	if(freq_min >= 1000000)
-		sprintf(aux_string, "%d M", (int)(freq_min/1000000));
+		sprintf(aux_string, "%d M", ROUND_TO_INT(freq_min/1000000.0));
 
 	else if(freq_min >= 1000)
-		sprintf(aux_string, "%d K", (int)freq_min/1000);
+		sprintf(aux_string, "%d K", ROUND_TO_INT(freq_min/1000.0));
 
 	else
-		sprintf(aux_string, "%d", (int)freq_min);
+		sprintf(aux_string, "%d", ROUND_TO_INT(freq_min));
 
-	memset(FminBuffer,0,sizeof(FminBuffer));
-	Unicode::strncpy(FminBuffer, aux_string,Unicode::strlen(aux_string));
-	Fmin.invalidate();
+	memset(labelFminBuffer,0,sizeof(labelFminBuffer));
+	Unicode::strncpy(labelFminBuffer, aux_string,Unicode::strlen(aux_string));
+	labelFmin.invalidate();
 }
 
 void Freq_ConfigView::SliderSet_Freq_Max(int value)
 {
 	char aux_string[6];
 
-	freq_max = pow(10, (float)value/100.0);
+	value_sliderFmax = value;
+
+	Check_Frequencies();
+
+	freq_max = pow(10, (float)value_sliderFmax/100.0);
 
 	if(freq_max >= 1000000)
-		sprintf(aux_string, "%d M", (int)(freq_max/1000000));
+		sprintf(aux_string, "%d M", ROUND_TO_INT(freq_max/1000000.0));
 
 	else if(freq_max >= 1000)
-		sprintf(aux_string, "%d K", (int)freq_max/1000);
+		sprintf(aux_string, "%d K", ROUND_TO_INT(freq_max/1000.0));
 
 	else
-		sprintf(aux_string, "%d", (int)freq_max);
+		sprintf(aux_string, "%d", ROUND_TO_INT(freq_max));
 
-	memset(FmaxBuffer,0,sizeof(FmaxBuffer));
-	Unicode::strncpy(FmaxBuffer, aux_string,Unicode::strlen(aux_string));
-	Fmax.invalidate();
-
+	memset(labelFmaxBuffer,0,sizeof(labelFmaxBuffer));
+	Unicode::strncpy(labelFmaxBuffer, aux_string,Unicode::strlen(aux_string));
+	labelFmax.invalidate();
 
 }
 
@@ -66,13 +115,13 @@ void Freq_ConfigView::SliderSet_PointsDecade(int value)
 {
 	char aux_string[6];
 
-	points_decade = (unsigned int) value;
+	value_sliderPoints = value;
 
-	sprintf(aux_string, "%d", points_decade);
+	sprintf(aux_string, "%d", value_sliderPoints);
 
-	memset(PointsBuffer,0,sizeof(PointsBuffer));
-	Unicode::strncpy(PointsBuffer, aux_string,Unicode::strlen(aux_string));
-	Points.invalidate();
+	memset(labelPointsBuffer,0,sizeof(labelPointsBuffer));
+	Unicode::strncpy(labelPointsBuffer, aux_string,Unicode::strlen(aux_string));
+	labelPoints.invalidate();
 }
 
 void Freq_ConfigView::Enter_Freq()
@@ -117,6 +166,6 @@ void Freq_ConfigView::Enter_Freq()
 		range_min = 100000;
 
 
-	presenter->Freq_Config_Presenter(freq_min, freq_max, points_decade);
+	presenter->Freq_Config_Presenter(freq_min, freq_max, value_sliderPoints);
 
 }

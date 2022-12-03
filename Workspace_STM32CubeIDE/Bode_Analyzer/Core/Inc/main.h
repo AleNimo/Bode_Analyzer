@@ -46,7 +46,7 @@ extern "C" {
 
 /* Exported macro ------------------------------------------------------------*/
 /* USER CODE BEGIN EM */
-
+#define ROUND_TO_INT(x) ((uint32_t)((x)+0.5))
 /* USER CODE END EM */
 
 /* Exported functions prototypes ---------------------------------------------*/

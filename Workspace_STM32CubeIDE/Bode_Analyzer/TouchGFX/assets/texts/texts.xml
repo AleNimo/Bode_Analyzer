@@ -6,6 +6,15 @@
   <Texts>
     <TextGroup Id="Group1" />
     <TextGroup Id="Unsorted">
+      <Text Id="Error" Alignment="Left" TypographyId="Calibri">
+        <Translation Language="GB">Cumplir: Fmin &lt; Fmax</Translation>
+      </Text>
+      <Text Id="__SingleUse_2J35" Alignment="Center" TypographyId="Calibri">
+        <Translation Language="GB">Fase [rad]</Translation>
+      </Text>
+      <Text Id="__SingleUse_O5AD" Alignment="Center" TypographyId="Calibri">
+        <Translation Language="GB">Módulo [dB]</Translation>
+      </Text>
       <Text Id="__SingleUse_D5MF" Alignment="Left" TypographyId="Calibri">
         <Translation Language="GB">N: &lt;value&gt;</Translation>
       </Text>
@@ -22,7 +31,7 @@
         <Translation Language="GB">ϕ</Translation>
       </Text>
       <Text Id="__SingleUse_03NM" Alignment="Center" TypographyId="Default">
-        <Translation Language="GB">Ok</Translation>
+        <Translation Language="GB">OK</Translation>
       </Text>
       <Text Id="__SingleUse_CYOR" Alignment="Right" TypographyId="Prueba_Texto">
         <Translation Language="GB">&lt;&gt;</Translation>

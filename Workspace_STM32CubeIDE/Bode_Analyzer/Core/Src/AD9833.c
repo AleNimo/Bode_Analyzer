@@ -9,8 +9,6 @@
 
 extern SPI_HandleTypeDef hspi2;
 
-#define ROUND_TO_INT(x) ((uint32_t)((x)+0.5))
-
 void AD9833_Init(void)
 {
 	uint16_t control_reg = 0b0010000100000000;
