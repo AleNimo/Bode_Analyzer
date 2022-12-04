@@ -1,4 +1,5 @@
 Record=TopLevelDocument|FileName=BDAN.SchDoc|SheetNumber=1
 Record=SheetSymbol|SourceDocument=BDAN.SchDoc|Designator=U_BDAN_ACOND|SchDesignator=U_BDAN_ACOND|FileName=BDAN_ACOND.SchDoc|SheetNumber=3|SymbolType=Normal|RawFileName=BDAN_ACOND.SchDoc|DesignItemId= |SourceLibraryName= |ObjectKind=Sheet Symbol|RevisionGUID= |ItemGUID= |VaultGUID= 
 Record=SheetSymbol|SourceDocument=BDAN.SchDoc|Designator=U_BDAN_CPU|SchDesignator=U_BDAN_CPU|FileName=BDAN_CPU.SchDoc|SheetNumber=2|SymbolType=Normal|RawFileName=BDAN_CPU.SchDoc|DesignItemId= |SourceLibraryName= |ObjectKind=Sheet Symbol|RevisionGUID= |ItemGUID= |VaultGUID= 
+Record=SheetSymbol|SourceDocument=BDAN.SchDoc|Designator=U_BDAN_PWR|SchDesignator=U_BDAN_PWR|FileName=BDAN_PWR.SchDoc|SheetNumber=5|SymbolType=Normal|RawFileName=BDAN_PWR.SchDoc|DesignItemId= |SourceLibraryName= |ObjectKind=Sheet Symbol|RevisionGUID= |ItemGUID= |VaultGUID= 
 Record=SheetSymbol|SourceDocument=BDAN.SchDoc|Designator=U_BDAN_TFT|SchDesignator=U_BDAN_TFT|FileName=BDAN_TFT.SchDoc|SheetNumber=4|SymbolType=Normal|RawFileName=BDAN_TFT.SchDoc|DesignItemId= |SourceLibraryName= |ObjectKind=Sheet Symbol|RevisionGUID= |ItemGUID= |VaultGUID= 
