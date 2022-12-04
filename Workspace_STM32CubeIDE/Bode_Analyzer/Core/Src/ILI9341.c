@@ -15,7 +15,6 @@ void LCD_Write(uint16_t word)
 	GPIOB->ODR = ((GPIOB->ODR) & 0xFFFFFFF8) | (word >>13); // bits 13 a 15 de word
 
 	LCD_WR_GPIO_Port->BSRR = LCD_WR_Pin; //pin en 1
-
 }
 
 void LCD_Command_Write(uint16_t command)
