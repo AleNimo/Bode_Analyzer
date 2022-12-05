@@ -25,8 +25,8 @@
 /* Private includes ----------------------------------------------------------*/
 /* USER CODE BEGIN Includes */
 #include "ILI9341.h"
+#include "AD9833.h"
 #include "Touch.h"
-
 /* USER CODE END Includes */
 
 /* Private typedef -----------------------------------------------------------*/
@@ -53,13 +53,7 @@ SPI_HandleTypeDef hspi2;
 TIM_HandleTypeDef htim1;
 TIM_HandleTypeDef htim2;
 
-/* Definitions for hardwareTask */
-osThreadId_t hardwareTaskHandle;
-const osThreadAttr_t hardwareTask_attributes = {
-  .name = "hardwareTask",
-  .stack_size = 2000 * 4,
-  .priority = (osPriority_t) osPriorityNormal,
-};
+//osThreadId defaultTaskHandle;
 /* USER CODE BEGIN PV */
 float freq[600];
 /*float freq[600]={
@@ -665,7 +659,8 @@ float freq[600];
 		977237,
 		1000000};
 */
-	float mag [600]= {
+	float mag [600]=
+	{
 			-0.000394776,
 			-0.000413381,
 			-0.000432863,
@@ -1265,7 +1260,8 @@ float freq[600];
 			-173.071,
 			-173.531,
 			-173.992,
-			-174.452};
+			-174.452
+	};
 	float phase[600]=
 	{
 			-0.0062831,
@@ -1867,7 +1863,8 @@ float freq[600];
 			-1.57062,
 			-1.57063,
 			-1.57063,
-			-1.57063};
+			-1.57063
+	};
 
 unsigned char data_ready = 0;
 unsigned int total_points = 0;
@@ -1881,10 +1878,10 @@ static void MX_SPI2_Init(void);
 static void MX_CRC_Init(void);
 static void MX_TIM1_Init(void);
 static void MX_TIM2_Init(void);
-void StartHardwareTask(void *argument);
+//void StartDefaultTask(void const * argument);
 
 /* USER CODE BEGIN PFP */
-
+void StartHardwareTask(void *pvParameters);
 /* USER CODE END PFP */
 
 /* Private user code ---------------------------------------------------------*/
@@ -1981,9 +1978,6 @@ int main(void)
 
   /* USER CODE END 2 */
 
-  /* Init scheduler */
-  osKernelInitialize();
-
   /* USER CODE BEGIN RTOS_MUTEX */
   /* add mutexes, ... */
   /* USER CODE END RTOS_MUTEX */
@@ -2001,23 +1995,22 @@ int main(void)
   /* USER CODE END RTOS_QUEUES */
 
   /* Create the thread(s) */
-  /* creation of hardwareTask */
-  hardwareTaskHandle = osThreadNew(StartHardwareTask, NULL, &hardwareTask_attributes);
+  /* definition and creation of defaultTask */
+//  osThreadDef(defaultTask, StartDefaultTask, osPriorityNormal, 0, 2000);
+//  defaultTaskHandle = osThreadCreate(osThread(defaultTask), NULL);
 
   /* USER CODE BEGIN RTOS_THREADS */
   /* add threads, ... */
+  xTaskCreate(StartHardwareTask, "HW_init", 2000, NULL, tskIDLE_PRIORITY+1, NULL);
   /* USER CODE END RTOS_THREADS */
 
-  /* USER CODE BEGIN RTOS_EVENTS */
-  /* add events, ... */
-  /* USER CODE END RTOS_EVENTS */
-
   /* Start scheduler */
-  osKernelStart();
+  //osKernelStart();
 
   /* We should never get here as control is now taken by the scheduler */
   /* Infinite loop */
   /* USER CODE BEGIN WHILE */
+  vTaskStartScheduler();
   while (1)
   {
     /* USER CODE END WHILE */
@@ -2365,33 +2358,62 @@ static void MX_GPIO_Init(void)
 /* USER CODE BEGIN 4 */
 extern void touchgfxSignalVSync(void);
 
+void StartHardwareTask(void* pvParameters)
+{
+	/* init code for USB_DEVICE */
+	MX_USB_DEVICE_Init();
+	/* USER CODE BEGIN 5 */
+	HAL_TIM_Base_Start_IT(&htim2);
+	MX_TouchGFX_Process();
+	while(1)
+	{
+
+	}
+}
+
 /* USER CODE END 4 */
 
-/* USER CODE BEGIN Header_StartHardwareTask */
+/* USER CODE BEGIN Header_StartDefaultTask */
 /**
-  * @brief  Function implementing the hardwareTask thread.
+  * @brief  Function implementing the defaultTask thread.
   * @param  argument: Not used
   * @retval None
   */
-/* USER CODE END Header_StartHardwareTask */
-void StartHardwareTask(void *argument)
-{
-  /* init code for USB_DEVICE */
-  MX_USB_DEVICE_Init();
-  /* USER CODE BEGIN 5 */
-  HAL_TIM_Base_Start_IT(&htim2);
-  MX_TouchGFX_Process();
+/* USER CODE END Header_StartDefaultTask */
+//void StartDefaultTask(void const * argument)
+//{
+//  /* init code for USB_DEVICE */
+//  MX_USB_DEVICE_Init();
+//  /* USER CODE BEGIN 5 */
+//	HAL_TIM_Base_Start_IT(&htim2);
+//	MX_TouchGFX_Process();
+//	while(1)
+//	{
+//
+//	}
+//}
 
+/* USER CODE END 4 */
 
-  /* Infinite loop */
-  for(;;)
-  {
-
-	//MX_TouchGFX_Process();
-    osDelay(1);
-  }
+/* USER CODE BEGIN Header_StartDefaultTask */
+/**
+  * @brief  Function implementing the defaultTask thread.
+  * @param  argument: Not used
+  * @retval None
+  */
+/* USER CODE END Header_StartDefaultTask */
+//void StartDefaultTask(void const * argument)
+//{
+//  /* init code for USB_DEVICE */
+//  MX_USB_DEVICE_Init();
+//  /* USER CODE BEGIN 5 */
+//  /* Infinite loop */
+//  for(;;)
+//  {
+//    osDelay(1);
+//  }
   /* USER CODE END 5 */
-}
+
 
 /**
   * @brief  Period elapsed callback in non blocking mode

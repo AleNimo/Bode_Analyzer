@@ -78,7 +78,7 @@ void MX_TouchGFX_Process(void)
 /**
  * TouchGFX application thread
  */
-void TouchGFX_Task(void *argument)
+void TouchGFX_Task(void const *argument)
 {
   // Calling forward to touchgfx_taskEntry in C++ domain
   touchgfx_taskEntry();
