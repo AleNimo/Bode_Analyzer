@@ -56,7 +56,7 @@ void AD9833_Init(void)
 	/******************************************/
 
 	AD9833_SetFrequency(1);	//Escribo FREQ0 con la frecuencia de 1Hz
-
+	AD9833_SetEnabled(FALSE);
 }
 
 

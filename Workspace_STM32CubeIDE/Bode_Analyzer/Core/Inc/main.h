@@ -41,7 +41,7 @@ extern "C" {
 
 /* Exported constants --------------------------------------------------------*/
 /* USER CODE BEGIN EC */
-
+#define N_SAMPLES 8
 /* USER CODE END EC */
 
 /* Exported macro ------------------------------------------------------------*/

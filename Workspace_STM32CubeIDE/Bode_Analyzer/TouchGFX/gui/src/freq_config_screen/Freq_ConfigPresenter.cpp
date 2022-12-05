@@ -20,4 +20,5 @@ void Freq_ConfigPresenter::deactivate()
 void Freq_ConfigPresenter::Freq_Config_Presenter(float freq_min, float freq_max, unsigned int points_decade)
 {
 	model->Freq_Config(freq_min, freq_max, points_decade);
+
 }

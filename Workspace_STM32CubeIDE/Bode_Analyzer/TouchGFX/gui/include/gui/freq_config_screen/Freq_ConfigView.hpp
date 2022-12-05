@@ -18,7 +18,7 @@ public:
     virtual void SliderSet_Freq_Max(int value);
     virtual void SliderSet_PointsDecade(int value);
 
-    virtual void Enter_Freq();
+    virtual void Measure();
 
     float freq_max;
 	float freq_min;

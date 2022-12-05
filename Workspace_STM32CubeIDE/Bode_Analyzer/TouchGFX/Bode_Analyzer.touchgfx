@@ -196,14 +196,14 @@
         ],
         "Interactions": [
           {
-            "InteractionName": "Enter_Frequency",
+            "InteractionName": "Measure",
             "Trigger": {
               "Type": "TriggerClicked",
               "TriggerComponent": "buttonEnter_Freq"
             },
             "Action": {
               "Type": "ActionCustom",
-              "FunctionName": "Enter_Freq"
+              "FunctionName": "Measure"
             }
           },
           {
