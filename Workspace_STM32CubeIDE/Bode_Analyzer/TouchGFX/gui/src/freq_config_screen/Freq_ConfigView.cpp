@@ -124,7 +124,7 @@ void Freq_ConfigView::SliderSet_PointsDecade(int value)
 	labelPoints.invalidate();
 }
 
-void Freq_ConfigView::Enter_Freq()
+void Freq_ConfigView::Measure()
 {
 
 	//encontramos la decada maxima

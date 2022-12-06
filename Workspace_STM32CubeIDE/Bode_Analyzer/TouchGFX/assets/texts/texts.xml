@@ -31,7 +31,7 @@
         <Translation Language="GB">ϕ</Translation>
       </Text>
       <Text Id="__SingleUse_03NM" Alignment="Center" TypographyId="Default">
-        <Translation Language="GB">OK</Translation>
+        <Translation Language="GB">Medir</Translation>
       </Text>
       <Text Id="__SingleUse_CYOR" Alignment="Right" TypographyId="Prueba_Texto">
         <Translation Language="GB">&lt;&gt;</Translation>

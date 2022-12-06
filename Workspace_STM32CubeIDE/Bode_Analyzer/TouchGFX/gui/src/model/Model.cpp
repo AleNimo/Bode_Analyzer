@@ -1,12 +1,15 @@
 #include <gui/model/Model.hpp>
 #include <cmath>
 #include <gui/model/ModelListener.hpp>
+#include "cmsis_os.h"
 
 extern float freq[600];
 extern float mag[600];
 extern float phase[600];
 extern unsigned char data_ready;
 extern unsigned int total_points;
+
+extern SemaphoreHandle_t sem_measure;
 
 Model::Model() : modelListener(0)
 {
@@ -32,7 +35,8 @@ void Model::Freq_Config(float freq_min, float freq_max, unsigned int points_deca
 		i++;
 	}
 	total_points = i;
-	data_ready=1;
+
+	xSemaphoreGive(sem_measure);	//Desbloqueo tarea de medición
 }
 
 void Model::tick()
