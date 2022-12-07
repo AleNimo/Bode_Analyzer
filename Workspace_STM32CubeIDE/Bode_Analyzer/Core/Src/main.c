@@ -52,12 +52,11 @@ SPI_HandleTypeDef hspi2;
 
 TIM_HandleTypeDef htim1;
 TIM_HandleTypeDef htim2;
-TIM_HandleTypeDef htim3;
 
-osThreadId defaultTaskHandle;
+//osThreadId defaultTaskHandle;
 /* USER CODE BEGIN PV */
-float freq[600];
-//float freq[600]={
+float freq[MAX_FREQ_POINTS];
+//float freq[MAX_FREQ_POINTS]={
 //		1,
 //		1.02329,
 //		1.04713,
@@ -659,8 +658,8 @@ float freq[600];
 //		954993,
 //		977237,
 //		1000000};
-float mag[600];
-//float mag_ADC [600]=
+float mag[MAX_FREQ_POINTS];
+//float mag_ADC [MAX_FREQ_POINTS]=
 //	{
 //			-0.000394776,
 //			-0.000413381,
@@ -1263,8 +1262,8 @@ float mag[600];
 //			-173.992,
 //			-174.452
 //	};
-float phase[600];
-//float phase_ADC[600]=
+float phase[MAX_FREQ_POINTS];
+//float phase_ADC[MAX_FREQ_POINTS]=
 //	{
 //			-0.0062831,
 //			-0.00642945,
@@ -1871,13 +1870,25 @@ float phase[600];
 unsigned char data_ready = 0;
 unsigned int total_points = 0;
 
-uint8_t medicion = 0;
+//ADC (MÓDULO)
 uint16_t ADC_in[8];
 uint16_t ADC_out[8];
 
 //FreeRTOS
 SemaphoreHandle_t sem_measure;
+
+SemaphoreHandle_t sem_mod;
 SemaphoreHandle_t sem_ADC;
+
+SemaphoreHandle_t sem_phase;
+SemaphoreHandle_t sem_IC;
+
+QueueHandle_t queue_mod;
+
+QueueHandle_t queue_freq_phase;
+QueueHandle_t queue_phase;
+
+QueueHandle_t queue_IC;
 /* USER CODE END PV */
 
 /* Private function prototypes -----------------------------------------------*/
@@ -1888,12 +1899,12 @@ static void MX_SPI2_Init(void);
 static void MX_CRC_Init(void);
 static void MX_TIM1_Init(void);
 static void MX_TIM2_Init(void);
-static void MX_TIM3_Init(void);
-void StartDefaultTask(void const * argument);
 
 /* USER CODE BEGIN PFP */
 void StartHardwareTask(void *pvParameters);
 void MeasureTask(void *pvParameters);
+void ModuleTask(void *pvParameters);
+void PhaseTask(void *pvParameters);
 /* USER CODE END PFP */
 
 /* Private user code ---------------------------------------------------------*/
@@ -1934,7 +1945,6 @@ int main(void)
   MX_CRC_Init();
   MX_TIM1_Init();
   MX_TIM2_Init();
-  MX_TIM3_Init();
   MX_TouchGFX_Init();
   /* Call PreOsInit function */
   MX_TouchGFX_PreOSInit();
@@ -2000,10 +2010,21 @@ int main(void)
   /* USER CODE BEGIN RTOS_SEMAPHORES */
   /* add semaphores, ... */
   sem_measure = xSemaphoreCreateBinary();
+
+  sem_mod = xSemaphoreCreateBinary();
   sem_ADC = xSemaphoreCreateBinary();
 
+  sem_phase = xSemaphoreCreateBinary();
+  sem_IC = xSemaphoreCreateBinary();
+
+
   xSemaphoreTake(sem_measure, 0);
+
+  xSemaphoreTake(sem_mod, 0);
   xSemaphoreTake(sem_ADC, 0);
+
+  xSemaphoreTake(sem_phase, 0);
+  xSemaphoreTake(sem_IC, 0);
   /* USER CODE END RTOS_SEMAPHORES */
 
   /* USER CODE BEGIN RTOS_TIMERS */
@@ -2012,21 +2033,28 @@ int main(void)
 
   /* USER CODE BEGIN RTOS_QUEUES */
   /* add queues, ... */
+  queue_mod = xQueueCreate(1, sizeof(float));
+  queue_phase = xQueueCreate(1, sizeof(float));
+
+  queue_freq_phase = xQueueCreate(1, sizeof(float));
+  queue_IC = xQueueCreate(2, sizeof(uint16_t));
   /* USER CODE END RTOS_QUEUES */
 
   /* Create the thread(s) */
   /* definition and creation of defaultTask */
-  osThreadDef(defaultTask, StartDefaultTask, osPriorityNormal, 0, 2000);
-  defaultTaskHandle = osThreadCreate(osThread(defaultTask), NULL);
+//  osThreadDef(defaultTask, StartDefaultTask, osPriorityNormal, 0, 2000);
+//  defaultTaskHandle = osThreadCreate(osThread(defaultTask), NULL);
 
   /* USER CODE BEGIN RTOS_THREADS */
   /* add threads, ... */
   xTaskCreate(StartHardwareTask, "HW_init", 2000, NULL, tskIDLE_PRIORITY+1, NULL);
   xTaskCreate(MeasureTask, "Measure", configMINIMAL_STACK_SIZE, NULL, tskIDLE_PRIORITY+1, NULL);
+  xTaskCreate(ModuleTask, "Module", configMINIMAL_STACK_SIZE, NULL, tskIDLE_PRIORITY+1, NULL);
+  xTaskCreate(PhaseTask, "Phase", configMINIMAL_STACK_SIZE, NULL, tskIDLE_PRIORITY+1, NULL);
   /* USER CODE END RTOS_THREADS */
 
   /* Start scheduler */
-  osKernelStart();
+//  osKernelStart();
 
   /* We should never get here as control is now taken by the scheduler */
   /* Infinite loop */
@@ -2434,51 +2462,6 @@ static void MX_TIM2_Init(void)
 }
 
 /**
-  * @brief TIM3 Initialization Function
-  * @param None
-  * @retval None
-  */
-static void MX_TIM3_Init(void)
-{
-
-  /* USER CODE BEGIN TIM3_Init 0 */
-
-  /* USER CODE END TIM3_Init 0 */
-
-  TIM_ClockConfigTypeDef sClockSourceConfig = {0};
-  TIM_MasterConfigTypeDef sMasterConfig = {0};
-
-  /* USER CODE BEGIN TIM3_Init 1 */
-
-  /* USER CODE END TIM3_Init 1 */
-  htim3.Instance = TIM3;
-  htim3.Init.Prescaler = 8399;
-  htim3.Init.CounterMode = TIM_COUNTERMODE_UP;
-  htim3.Init.Period = 10;
-  htim3.Init.ClockDivision = TIM_CLOCKDIVISION_DIV1;
-  htim3.Init.AutoReloadPreload = TIM_AUTORELOAD_PRELOAD_DISABLE;
-  if (HAL_TIM_Base_Init(&htim3) != HAL_OK)
-  {
-    Error_Handler();
-  }
-  sClockSourceConfig.ClockSource = TIM_CLOCKSOURCE_INTERNAL;
-  if (HAL_TIM_ConfigClockSource(&htim3, &sClockSourceConfig) != HAL_OK)
-  {
-    Error_Handler();
-  }
-  sMasterConfig.MasterOutputTrigger = TIM_TRGO_RESET;
-  sMasterConfig.MasterSlaveMode = TIM_MASTERSLAVEMODE_DISABLE;
-  if (HAL_TIMEx_MasterConfigSynchronization(&htim3, &sMasterConfig) != HAL_OK)
-  {
-    Error_Handler();
-  }
-  /* USER CODE BEGIN TIM3_Init 2 */
-
-  /* USER CODE END TIM3_Init 2 */
-
-}
-
-/**
   * @brief GPIO Initialization Function
   * @param None
   * @retval None
@@ -2505,7 +2488,10 @@ static void MX_GPIO_Init(void)
 
   /*Configure GPIO pin Output Level */
   HAL_GPIO_WritePin(GPIOB, DB13_Pin|DB14_Pin|DB15_Pin|LCD_CS_Pin
-                          |TOUCH_CS_Pin|RST_VIN_Pin|RST_VOUT_Pin, GPIO_PIN_RESET);
+                          |TOUCH_CS_Pin, GPIO_PIN_RESET);
+
+  /*Configure GPIO pin Output Level */
+  HAL_GPIO_WritePin(GPIOB, RST_VIN_Pin|RST_VOUT_Pin, GPIO_PIN_SET);
 
   /*Configure GPIO pin : B1_Pin */
   GPIO_InitStruct.Pin = B1_Pin;
@@ -2536,10 +2522,17 @@ static void MX_GPIO_Init(void)
   HAL_GPIO_Init(GPIOA, &GPIO_InitStruct);
 
   /*Configure GPIO pins : DB13_Pin DB14_Pin DB15_Pin LCD_CS_Pin
-                           TOUCH_CS_Pin RST_VIN_Pin RST_VOUT_Pin */
+                           TOUCH_CS_Pin */
   GPIO_InitStruct.Pin = DB13_Pin|DB14_Pin|DB15_Pin|LCD_CS_Pin
-                          |TOUCH_CS_Pin|RST_VIN_Pin|RST_VOUT_Pin;
+                          |TOUCH_CS_Pin;
   GPIO_InitStruct.Mode = GPIO_MODE_OUTPUT_PP;
+  GPIO_InitStruct.Pull = GPIO_NOPULL;
+  GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_LOW;
+  HAL_GPIO_Init(GPIOB, &GPIO_InitStruct);
+
+  /*Configure GPIO pins : RST_VIN_Pin RST_VOUT_Pin */
+  GPIO_InitStruct.Pin = RST_VIN_Pin|RST_VOUT_Pin;
+  GPIO_InitStruct.Mode = GPIO_MODE_OUTPUT_OD;
   GPIO_InitStruct.Pull = GPIO_NOPULL;
   GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_LOW;
   HAL_GPIO_Init(GPIOB, &GPIO_InitStruct);
@@ -2553,6 +2546,7 @@ static void MX_GPIO_Init(void)
 }
 
 /* USER CODE BEGIN 4 */
+
 extern void touchgfxSignalVSync(void);
 
 void StartHardwareTask(void* pvParameters)
@@ -2568,75 +2562,153 @@ void StartHardwareTask(void* pvParameters)
 	}
 }
 
-void HAL_ADC_ConvCpltCallback(ADC_HandleTypeDef* hadc)
-{
-	BaseType_t xHigherPriorityTaskWoken = pdFALSE;
-
-	if(medicion < 8)
-		ADC_in[medicion] = HAL_ADC_GetValue(&hadc1);
-	else
-		ADC_out[medicion-8] = HAL_ADC_GetValue(&hadc1);
-
-	medicion++;
-
-	if(medicion == 16) //Se realizaron todas las mediciones, desbloqueo tarea
-	{
-		HAL_TIM_Base_Stop_IT(&htim3);	//Freno timer de conversion cada 1ms
-		xSemaphoreGiveFromISR(sem_ADC, &xHigherPriorityTaskWoken );
-		portYIELD_FROM_ISR( xHigherPriorityTaskWoken );
-	}
-}
-
 void MeasureTask(void* pvParameters)
 {
 	uint16_t i;
-	uint8_t j;
-
-	float v_in = 0;
-	float v_out = 0;
 
 	while(1)
 	{
 		xSemaphoreTake(sem_measure, portMAX_DELAY);
 
-
 		//Para cada punto de frecuencia
 		for(i = 0; i< total_points; i++)
 		{
+			//Reseteo detectores de pico antes de rehabilitar señal
+			HAL_GPIO_WritePin(RST_VIN_GPIO_Port, RST_VIN_Pin, GPIO_PIN_RESET);
+			HAL_GPIO_WritePin(RST_VOUT_GPIO_Port, RST_VOUT_Pin, GPIO_PIN_RESET);
+
+			vTaskDelay(pdMS_TO_TICKS(100));
+
+			HAL_GPIO_WritePin(RST_VIN_GPIO_Port, RST_VIN_Pin, GPIO_PIN_SET);
+			HAL_GPIO_WritePin(RST_VOUT_GPIO_Port, RST_VOUT_Pin, GPIO_PIN_SET);
+
 			//Genero señal (frecuencia redondeada a entero por el momento)
 			AD9833_SetFrequency(ROUND_TO_INT(freq[i]));
 			AD9833_SetEnabled(TRUE);
 
 			//MEDICION DE MAGNITUD:
+			xSemaphoreGive(sem_mod);
 
-			//Realizo 8 mediciones en la entrada y luego 8 en la salida separadas 1ms cada una
-			HAL_TIM_Base_Start_IT(&htim3);
+			//MEDICION DE FASE:
+			xQueueSend(queue_freq_phase, &freq[i], portMAX_DELAY);
 
-			xSemaphoreTake(sem_ADC, portMAX_DELAY);//espero las 16 mediciones en esta frecuencia
+			xQueueReceive(queue_mod, &mag[i], portMAX_DELAY);
 
-			//Promedio de 8 valores
+			xQueueReceive(queue_phase, &phase[i], portMAX_DELAY);
 
-			for(j=0; j<N_SAMPLES; j++)
-			{
-				v_in += ADC_in[j];
-				v_out += ADC_out[j];
-			}
-
-			v_in /= 8;
-			v_out /= 8;
-
-			/*****************************************************************************************/
-			/*Podría realizarse una transformación a tensión teniendo la transferencia del ADC medida*/
-			/*****************************************************************************************/
-
-			mag[i] = v_out/v_in;
 		}
 
 		data_ready = 1;
 	}
 }
 
+void ModuleTask(void *pvParameters)
+{
+	uint8_t medicion = 0;
+
+	uint8_t j;
+
+	float cuentas_in = 0;
+	float cuentas_out = 0;
+
+	float mag;
+
+	while(1)
+	{
+		xSemaphoreTake(sem_mod, portMAX_DELAY);
+
+		//Realizo 8 mediciones en la entrada y luego 8 en la salida separadas 1ms cada una
+		while(medicion < 16)
+		{
+			HAL_ADC_Start(&hadc1);
+
+			HAL_ADC_PollForConversion(&hadc1, 1);	//Timeout maximo de 1ms
+
+			if(medicion < 8)
+				ADC_in[medicion] = HAL_ADC_GetValue(&hadc1);
+			else
+				ADC_out[medicion-8] = HAL_ADC_GetValue(&hadc1);
+
+			vTaskDelay(pdMS_TO_TICKS(1));
+			medicion++;
+		}
+		medicion = 0;
+
+		//Promedio de 8 valores
+
+		for(j=0; j<N_SAMPLES; j++)
+		{
+			cuentas_in += ADC_in[j];
+			cuentas_out += ADC_out[j];
+		}
+
+		//v_in /= 8;	//No es necesario si no hay transferencia calibrada
+		//v_out /= 8;
+
+		/*****************************************************************************************/
+		/*Falta hacer una transformación a tensión teniendo la transferencia calibrada del ADC   */
+		/*****************************************************************************************/
+
+		mag = cuentas_out/cuentas_in;
+
+		xQueueSend(queue_mod, &mag, portMAX_DELAY);
+	}
+}
+
+void HAL_TIM_IC_CaptureCallback(TIM_HandleTypeDef *htim)
+{
+	static uint8_t first_capture = 0;
+
+	BaseType_t xHigherPriorityTaskWoken = pdFALSE;
+
+	if(htim->Channel == HAL_TIM_ACTIVE_CHANNEL_2)
+	{
+		if(first_capture == 0)	//Primer flanco ascendente
+		{
+			uint16_t IC_in = HAL_TIM_ReadCapturedValue(htim, TIM_CHANNEL_2);
+			first_capture = 1;
+			xQueueSendFromISR( queue_IC, &IC_in, &xHigherPriorityTaskWoken );
+			portYIELD_FROM_ISR( xHigherPriorityTaskWoken );
+		}
+	}
+	if(htim->Channel == HAL_TIM_ACTIVE_CHANNEL_3)
+	{
+		if(first_capture)	//Si ya se capturó el primer flanco en el canal 2
+		{
+			uint16_t IC_out = HAL_TIM_ReadCapturedValue(htim, TIM_CHANNEL_3);
+
+			xQueueSendFromISR( queue_IC, &IC_out, &xHigherPriorityTaskWoken );
+			portYIELD_FROM_ISR( xHigherPriorityTaskWoken );
+		}
+	}
+}
+
+void PhaseTask(void *pvParameters)
+{
+	uint16_t IC_in;
+	uint16_t IC_out;
+
+	float freq;
+	float phase;
+
+	while(1)
+	{
+		xQueueReceive(queue_freq_phase, &freq, portMAX_DELAY);
+
+		HAL_TIM_IC_Start_IT(&htim1, TIM_CHANNEL_2);
+		HAL_TIM_IC_Start_IT(&htim1, TIM_CHANNEL_3);
+
+		xQueueReceive(queue_IC, &IC_in, portMAX_DELAY);
+		xQueueReceive(queue_IC, &IC_out, portMAX_DELAY);
+
+		phase = (long double)2*PI*freq*(IC_out - IC_in);
+
+		xQueueSend(queue_phase, &phase, portMAX_DELAY);
+	}
+}
+
 /* USER CODE END 4 */
+
 
 /**
   * @brief  Period elapsed callback in non blocking mode
@@ -2651,9 +2723,6 @@ void HAL_TIM_PeriodElapsedCallback(TIM_HandleTypeDef *htim)
   /* USER CODE BEGIN Callback 0 */
   if (htim->Instance == TIM2)
 	  touchgfxSignalVSync();
-
-  if (htim->Instance == TIM3)
-	  HAL_ADC_Start_IT(&hadc1);
 
   /* USER CODE END Callback 0 */
   if (htim->Instance == TIM4) {

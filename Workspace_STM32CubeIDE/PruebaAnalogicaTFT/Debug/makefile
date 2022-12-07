@@ -60,8 +60,8 @@ all: main-build
 main-build: PruebaAnalogicaTFT.elf secondary-outputs
 
 # Tool invocations
-PruebaAnalogicaTFT.elf PruebaAnalogicaTFT.map: $(OBJS) $(USER_OBJS) D:\UTN\Nivel\ 4\Tecnicas\ Digitales\ 2\WorkSpace_STMCubeIDE\PruebaAnalogicaTFT\STM32F401RETX_FLASH.ld makefile objects.list $(OPTIONAL_TOOL_DEPS)
-	arm-none-eabi-gcc -o "PruebaAnalogicaTFT.elf" @"objects.list" $(USER_OBJS) $(LIBS) -mcpu=cortex-m4 -T"D:\UTN\Nivel 4\Tecnicas Digitales 2\WorkSpace_STMCubeIDE\PruebaAnalogicaTFT\STM32F401RETX_FLASH.ld" --specs=nosys.specs -Wl,-Map="PruebaAnalogicaTFT.map" -Wl,--gc-sections -static --specs=nano.specs -mfpu=fpv4-sp-d16 -mfloat-abi=hard -mthumb -Wl,--start-group -lc -lm -Wl,--end-group
+PruebaAnalogicaTFT.elf PruebaAnalogicaTFT.map: $(OBJS) $(USER_OBJS) D:\UTN\Nivel_4\Tecnicas_Digitales_2\Bode_Analyzer\Workspace_STM32CubeIDE\PruebaAnalogicaTFT\STM32F401RETX_FLASH.ld makefile objects.list $(OPTIONAL_TOOL_DEPS)
+	arm-none-eabi-gcc -o "PruebaAnalogicaTFT.elf" @"objects.list" $(USER_OBJS) $(LIBS) -mcpu=cortex-m4 -T"D:\UTN\Nivel_4\Tecnicas_Digitales_2\Bode_Analyzer\Workspace_STM32CubeIDE\PruebaAnalogicaTFT\STM32F401RETX_FLASH.ld" --specs=nosys.specs -Wl,-Map="PruebaAnalogicaTFT.map" -Wl,--gc-sections -static --specs=nano.specs -mfpu=fpv4-sp-d16 -mfloat-abi=hard -mthumb -Wl,--start-group -lc -lm -Wl,--end-group
 	@echo 'Finished building target: $@'
 	@echo ' '
 

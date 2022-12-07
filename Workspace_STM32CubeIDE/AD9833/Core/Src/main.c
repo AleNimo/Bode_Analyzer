@@ -68,7 +68,7 @@ static void MX_SPI3_Init(void);
 int main(void)
 {
   /* USER CODE BEGIN 1 */
-	uint32_t i = 1;
+  uint8_t estado = TRUE;
   /* USER CODE END 1 */
 
   /* MCU Configuration--------------------------------------------------------*/
@@ -93,23 +93,32 @@ int main(void)
   MX_SPI3_Init();
   /* USER CODE BEGIN 2 */
   AD9833_Init();
-  //AD9833_SetFrequency(i);
+  AD9833_SetFrequency(1);
   /* USER CODE END 2 */
 
   /* Infinite loop */
   /* USER CODE BEGIN WHILE */
   while (1)
   {
+
 	  if(puls)
 	  {
-		  if (i == 1000000) i=1;
+		  if(estado == TRUE)
+		  {
+			  estado = FALSE;
+		  	  AD9833_SetEnabled(estado);
+		  	  HAL_Delay(100);
+		  	  HAL_GPIO_WritePin(RST_VIN_GPIO_Port, RST_VIN_Pin, GPIO_PIN_SET);
+		  	  HAL_Delay(1000);
+		  	  HAL_GPIO_WritePin(RST_VIN_GPIO_Port, RST_VIN_Pin, GPIO_PIN_RESET);
+		  }
+		  else
+		  {
+			  estado = TRUE;
+			  AD9833_SetEnabled(estado);
 
-		  else if(i >= 100000)
-			i = i+100000;
 
-		  else i = i*10;
-
-		  AD9833_SetFrequency(i);
+		  }
 		  HAL_Delay(100);
 		  puls = 0;
 	  }
@@ -258,6 +267,9 @@ static void MX_GPIO_Init(void)
   /*Configure GPIO pin Output Level */
   HAL_GPIO_WritePin(SPI3_CS_GPIO_Port, SPI3_CS_Pin, GPIO_PIN_RESET);
 
+  /*Configure GPIO pin Output Level */
+  HAL_GPIO_WritePin(RST_VIN_GPIO_Port, RST_VIN_Pin, GPIO_PIN_RESET);
+
   /*Configure GPIO pin : B1_Pin */
   GPIO_InitStruct.Pin = B1_Pin;
   GPIO_InitStruct.Mode = GPIO_MODE_IT_FALLING;
@@ -277,6 +289,13 @@ static void MX_GPIO_Init(void)
   GPIO_InitStruct.Pull = GPIO_NOPULL;
   GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_LOW;
   HAL_GPIO_Init(SPI3_CS_GPIO_Port, &GPIO_InitStruct);
+
+  /*Configure GPIO pin : RST_VIN_Pin */
+  GPIO_InitStruct.Pin = RST_VIN_Pin;
+  GPIO_InitStruct.Mode = GPIO_MODE_OUTPUT_PP;
+  GPIO_InitStruct.Pull = GPIO_NOPULL;
+  GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_LOW;
+  HAL_GPIO_Init(RST_VIN_GPIO_Port, &GPIO_InitStruct);
 
   /* EXTI interrupt init*/
   HAL_NVIC_SetPriority(EXTI15_10_IRQn, 0, 0);

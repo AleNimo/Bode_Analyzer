@@ -401,8 +401,7 @@ void HAL_TIM_IC_CaptureCallback(TIM_HandleTypeDef *htim)
 	if (htim->Channel == HAL_TIM_ACTIVE_CHANNEL_1)
 	{
 
-
-		if (First_Captured==0 ) // first rising edge
+		if (First_Captured == 0) // first rising edge
 		{
 			IC_Val1 = HAL_TIM_ReadCapturedValue(htim, TIM_CHANNEL_1); // read the first value
 			First_Captured = 1;  // set the first captured as true
@@ -415,7 +414,6 @@ void HAL_TIM_IC_CaptureCallback(TIM_HandleTypeDef *htim)
 	{
 		if (First_Captured)	//Si el primer flanco del canal 2 ya fue capturado
 		{
-
 
 			IC_Val2 = HAL_TIM_ReadCapturedValue(htim, TIM_CHANNEL_2); // read the first value
 

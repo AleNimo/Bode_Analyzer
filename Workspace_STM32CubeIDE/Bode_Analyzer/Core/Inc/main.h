@@ -41,7 +41,10 @@ extern "C" {
 
 /* Exported constants --------------------------------------------------------*/
 /* USER CODE BEGIN EC */
-#define N_SAMPLES 8
+#define N_SAMPLES 8	//N_SAMPLES de entrada y N_SAMPLES de salida tomadas con el ADC
+#define PI 3.1415926535897932384626433832795028841971693993751058209749445923078164062
+
+#define MAX_FREQ_POINTS 600
 /* USER CODE END EC */
 
 /* Exported macro ------------------------------------------------------------*/
@@ -121,10 +124,10 @@ void Error_Handler(void);
 #define DB12_GPIO_Port GPIOC
 #define RST_VIN_Pin GPIO_PIN_6
 #define RST_VIN_GPIO_Port GPIOB
-#define RST_VOUT_Pin GPIO_PIN_7
-#define RST_VOUT_GPIO_Port GPIOB
 #define TOUCH_IRQ_Pin GPIO_PIN_8
 #define TOUCH_IRQ_GPIO_Port GPIOB
+#define RST_VOUT_Pin GPIO_PIN_9
+#define RST_VOUT_GPIO_Port GPIOB
 /* USER CODE BEGIN Private defines */
 
 /* USER CODE END Private defines */
