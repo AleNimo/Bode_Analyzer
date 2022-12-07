@@ -27,6 +27,7 @@
 #include "ILI9341.h"
 #include "AD9833.h"
 #include "Touch.h"
+#include <math.h>
 /* USER CODE END Includes */
 
 /* Private typedef -----------------------------------------------------------*/
@@ -1871,8 +1872,7 @@ unsigned char data_ready = 0;
 unsigned int total_points = 0;
 
 //ADC (MÓDULO)
-uint16_t ADC_in[8];
-uint16_t ADC_out[8];
+uint16_t ADC_buffer[N_SAMPLES];
 
 //FreeRTOS
 SemaphoreHandle_t sem_measure;
@@ -1899,6 +1899,7 @@ static void MX_SPI2_Init(void);
 static void MX_CRC_Init(void);
 static void MX_TIM1_Init(void);
 static void MX_TIM2_Init(void);
+//void StartDefaultTask(void const * argument);
 
 /* USER CODE BEGIN PFP */
 void StartHardwareTask(void *pvParameters);
@@ -2145,7 +2146,7 @@ static void MX_ADC1_Init(void)
   hadc1.Init.ExternalTrigConvEdge = ADC_EXTERNALTRIGCONVEDGE_NONE;
   hadc1.Init.ExternalTrigConv = ADC_SOFTWARE_START;
   hadc1.Init.DataAlign = ADC_DATAALIGN_RIGHT;
-  hadc1.Init.NbrOfConversion = 16;
+  hadc1.Init.NbrOfConversion = 2;
   hadc1.Init.DMAContinuousRequests = DISABLE;
   hadc1.Init.EOCSelection = ADC_EOC_SINGLE_CONV;
   if (HAL_ADC_Init(&hadc1) != HAL_OK)
@@ -2165,120 +2166,8 @@ static void MX_ADC1_Init(void)
 
   /** Configure for the selected ADC regular channel its corresponding rank in the sequencer and its sample time.
   */
-  sConfig.Rank = 2;
-  if (HAL_ADC_ConfigChannel(&hadc1, &sConfig) != HAL_OK)
-  {
-    Error_Handler();
-  }
-
-  /** Configure for the selected ADC regular channel its corresponding rank in the sequencer and its sample time.
-  */
-  sConfig.Rank = 3;
-  if (HAL_ADC_ConfigChannel(&hadc1, &sConfig) != HAL_OK)
-  {
-    Error_Handler();
-  }
-
-  /** Configure for the selected ADC regular channel its corresponding rank in the sequencer and its sample time.
-  */
-  sConfig.Rank = 4;
-  if (HAL_ADC_ConfigChannel(&hadc1, &sConfig) != HAL_OK)
-  {
-    Error_Handler();
-  }
-
-  /** Configure for the selected ADC regular channel its corresponding rank in the sequencer and its sample time.
-  */
-  sConfig.Rank = 5;
-  if (HAL_ADC_ConfigChannel(&hadc1, &sConfig) != HAL_OK)
-  {
-    Error_Handler();
-  }
-
-  /** Configure for the selected ADC regular channel its corresponding rank in the sequencer and its sample time.
-  */
-  sConfig.Rank = 6;
-  if (HAL_ADC_ConfigChannel(&hadc1, &sConfig) != HAL_OK)
-  {
-    Error_Handler();
-  }
-
-  /** Configure for the selected ADC regular channel its corresponding rank in the sequencer and its sample time.
-  */
-  sConfig.Rank = 7;
-  if (HAL_ADC_ConfigChannel(&hadc1, &sConfig) != HAL_OK)
-  {
-    Error_Handler();
-  }
-
-  /** Configure for the selected ADC regular channel its corresponding rank in the sequencer and its sample time.
-  */
-  sConfig.Rank = 8;
-  if (HAL_ADC_ConfigChannel(&hadc1, &sConfig) != HAL_OK)
-  {
-    Error_Handler();
-  }
-
-  /** Configure for the selected ADC regular channel its corresponding rank in the sequencer and its sample time.
-  */
   sConfig.Channel = ADC_CHANNEL_3;
-  sConfig.Rank = 9;
-  if (HAL_ADC_ConfigChannel(&hadc1, &sConfig) != HAL_OK)
-  {
-    Error_Handler();
-  }
-
-  /** Configure for the selected ADC regular channel its corresponding rank in the sequencer and its sample time.
-  */
-  sConfig.Rank = 10;
-  if (HAL_ADC_ConfigChannel(&hadc1, &sConfig) != HAL_OK)
-  {
-    Error_Handler();
-  }
-
-  /** Configure for the selected ADC regular channel its corresponding rank in the sequencer and its sample time.
-  */
-  sConfig.Rank = 11;
-  if (HAL_ADC_ConfigChannel(&hadc1, &sConfig) != HAL_OK)
-  {
-    Error_Handler();
-  }
-
-  /** Configure for the selected ADC regular channel its corresponding rank in the sequencer and its sample time.
-  */
-  sConfig.Rank = 12;
-  if (HAL_ADC_ConfigChannel(&hadc1, &sConfig) != HAL_OK)
-  {
-    Error_Handler();
-  }
-
-  /** Configure for the selected ADC regular channel its corresponding rank in the sequencer and its sample time.
-  */
-  sConfig.Rank = 13;
-  if (HAL_ADC_ConfigChannel(&hadc1, &sConfig) != HAL_OK)
-  {
-    Error_Handler();
-  }
-
-  /** Configure for the selected ADC regular channel its corresponding rank in the sequencer and its sample time.
-  */
-  sConfig.Rank = 14;
-  if (HAL_ADC_ConfigChannel(&hadc1, &sConfig) != HAL_OK)
-  {
-    Error_Handler();
-  }
-
-  /** Configure for the selected ADC regular channel its corresponding rank in the sequencer and its sample time.
-  */
-  sConfig.Rank = 15;
-  if (HAL_ADC_ConfigChannel(&hadc1, &sConfig) != HAL_OK)
-  {
-    Error_Handler();
-  }
-
-  /** Configure for the selected ADC regular channel its corresponding rank in the sequencer and its sample time.
-  */
-  sConfig.Rank = 16;
+  sConfig.Rank = 2;
   if (HAL_ADC_ConfigChannel(&hadc1, &sConfig) != HAL_OK)
   {
     Error_Handler();
@@ -2373,7 +2262,7 @@ static void MX_TIM1_Init(void)
 
   /* USER CODE END TIM1_Init 1 */
   htim1.Instance = TIM1;
-  htim1.Init.Prescaler = 8399;
+  htim1.Init.Prescaler = 1679;
   htim1.Init.CounterMode = TIM_COUNTERMODE_UP;
   htim1.Init.Period = 65535;
   htim1.Init.ClockDivision = TIM_CLOCKDIVISION_DIV1;
@@ -2574,28 +2463,32 @@ void MeasureTask(void* pvParameters)
 		for(i = 0; i< total_points; i++)
 		{
 			//Reseteo detectores de pico antes de rehabilitar señal
-			HAL_GPIO_WritePin(RST_VIN_GPIO_Port, RST_VIN_Pin, GPIO_PIN_RESET);
-			HAL_GPIO_WritePin(RST_VOUT_GPIO_Port, RST_VOUT_Pin, GPIO_PIN_RESET);
-
-			vTaskDelay(pdMS_TO_TICKS(100));
-
 			HAL_GPIO_WritePin(RST_VIN_GPIO_Port, RST_VIN_Pin, GPIO_PIN_SET);
 			HAL_GPIO_WritePin(RST_VOUT_GPIO_Port, RST_VOUT_Pin, GPIO_PIN_SET);
+
+			vTaskDelay(pdMS_TO_TICKS(1));
+
+			HAL_GPIO_WritePin(RST_VIN_GPIO_Port, RST_VIN_Pin, GPIO_PIN_RESET);
+			HAL_GPIO_WritePin(RST_VOUT_GPIO_Port, RST_VOUT_Pin, GPIO_PIN_RESET);
 
 			//Genero señal (frecuencia redondeada a entero por el momento)
 			AD9833_SetFrequency(ROUND_TO_INT(freq[i]));
 			AD9833_SetEnabled(TRUE);
 
-			//MEDICION DE MAGNITUD:
+			//libero tarea de MEDICION DE MAGNITUD:
 			xSemaphoreGive(sem_mod);
 
-			//MEDICION DE FASE:
+			//libero tarea de MEDICION DE FASE:
 			xQueueSend(queue_freq_phase, &freq[i], portMAX_DELAY);
 
+			//Me quedo esperando los resultados de cada tarea
 			xQueueReceive(queue_mod, &mag[i], portMAX_DELAY);
 
 			xQueueReceive(queue_phase, &phase[i], portMAX_DELAY);
 
+			//Desactivo el generador para luego activarlo en la proxima frecuencia
+			AD9833_SetEnabled(FALSE);
+			vTaskDelay(pdMS_TO_TICKS(1));
 		}
 
 		data_ready = 1;
@@ -2617,33 +2510,30 @@ void ModuleTask(void *pvParameters)
 	{
 		xSemaphoreTake(sem_mod, portMAX_DELAY);
 
-		//Realizo 8 mediciones en la entrada y luego 8 en la salida separadas 1ms cada una
-		while(medicion < 16)
+		//Realizo N_SAMPLES mediciones en la entrada y luego N_SAMPLES en la salida separadas 1ms cada una
+		while(medicion < N_SAMPLES)
 		{
 			HAL_ADC_Start(&hadc1);
 
 			HAL_ADC_PollForConversion(&hadc1, 1);	//Timeout maximo de 1ms
 
-			if(medicion < 8)
-				ADC_in[medicion] = HAL_ADC_GetValue(&hadc1);
-			else
-				ADC_out[medicion-8] = HAL_ADC_GetValue(&hadc1);
+			ADC_buffer[medicion] = HAL_ADC_GetValue(&hadc1);
 
 			vTaskDelay(pdMS_TO_TICKS(1));
 			medicion++;
 		}
 		medicion = 0;
 
-		//Promedio de 8 valores
+		//Promedio de N_SAMPLES
 
-		for(j=0; j<N_SAMPLES; j++)
+		for(j=0; j<N_SAMPLES; j+=2)
 		{
-			cuentas_in += ADC_in[j];
-			cuentas_out += ADC_out[j];
+			cuentas_in += ADC_buffer[j];
+			cuentas_out += ADC_buffer[j+1];
 		}
 
-		//v_in /= 8;	//No es necesario si no hay transferencia calibrada
-		//v_out /= 8;
+		//v_in /= N_SAMPLES;	//No es necesario si no hay transferencia calibrada
+		//v_out /= N_SAMPLES;
 
 		/*****************************************************************************************/
 		/*Falta hacer una transformación a tensión teniendo la transferencia calibrada del ADC   */
@@ -2677,6 +2567,9 @@ void HAL_TIM_IC_CaptureCallback(TIM_HandleTypeDef *htim)
 		{
 			uint16_t IC_out = HAL_TIM_ReadCapturedValue(htim, TIM_CHANNEL_3);
 
+			HAL_TIM_IC_Stop_IT(&htim1, TIM_CHANNEL_2);
+			HAL_TIM_IC_Stop_IT(&htim1, TIM_CHANNEL_3);
+
 			xQueueSendFromISR( queue_IC, &IC_out, &xHigherPriorityTaskWoken );
 			portYIELD_FROM_ISR( xHigherPriorityTaskWoken );
 		}
@@ -2688,6 +2581,8 @@ void PhaseTask(void *pvParameters)
 	uint16_t IC_in;
 	uint16_t IC_out;
 
+	float time_diff;
+
 	float freq;
 	float phase;
 
@@ -2695,13 +2590,30 @@ void PhaseTask(void *pvParameters)
 	{
 		xQueueReceive(queue_freq_phase, &freq, portMAX_DELAY);
 
+		//Calculo preescaler de TIM1 dependiendo de la frecuencia de senoidal
+		htim1.Init.Prescaler = ceil((long double)FREQ_TIM1/(65535*freq) - 1);
+		if (HAL_TIM_Base_Init(&htim1) != HAL_OK)
+		{
+			Error_Handler();
+		}
+
 		HAL_TIM_IC_Start_IT(&htim1, TIM_CHANNEL_2);
 		HAL_TIM_IC_Start_IT(&htim1, TIM_CHANNEL_3);
 
 		xQueueReceive(queue_IC, &IC_in, portMAX_DELAY);
 		xQueueReceive(queue_IC, &IC_out, portMAX_DELAY);
 
-		phase = (long double)2*PI*freq*(IC_out - IC_in);
+		if (IC_out > IC_in)
+		{
+			time_diff = (IC_out - IC_in) * htim1.Init.Prescaler / FREQ_TIM1;
+		}
+
+		else if (IC_in > IC_out) //Entre IC_in e IC_out se llenó el registro de la cuenta
+		{
+			time_diff = ((65535 - IC_in) + IC_out) * htim1.Init.Prescaler / FREQ_TIM1;
+		}
+
+		phase = 2*M_PI*freq*time_diff;
 
 		xQueueSend(queue_phase, &phase, portMAX_DELAY);
 	}

@@ -41,10 +41,11 @@ extern "C" {
 
 /* Exported constants --------------------------------------------------------*/
 /* USER CODE BEGIN EC */
-#define N_SAMPLES 8	//N_SAMPLES de entrada y N_SAMPLES de salida tomadas con el ADC
-#define PI 3.1415926535897932384626433832795028841971693993751058209749445923078164062
+#define N_SAMPLES 20	//SAMPLES de entrada + salida tomadas con el ADC
 
 #define MAX_FREQ_POINTS 600
+
+#define FREQ_TIM1 84000000
 /* USER CODE END EC */
 
 /* Exported macro ------------------------------------------------------------*/
