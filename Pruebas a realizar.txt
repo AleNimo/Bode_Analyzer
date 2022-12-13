@@ -1,4 +1,3 @@
--Definir el reset del cap del detector de pico (El micro se la aguanta?)
 -Actualizar rectangulos chicos de la pantalla
 
 

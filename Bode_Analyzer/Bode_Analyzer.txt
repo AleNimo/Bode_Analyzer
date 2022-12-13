@@ -1,0 +1,22 @@
+Board Information Report
+Filename     : D:\UTN\Nivel_4\Tecnicas_Digitales_2\Bode_Analyzer\Bode_Analyzer\Bode_Analyzer.PcbDoc
+Date         : 8/12/2022
+Time         : 16:51:20
+Time Elapsed : 00:00:00
+
+General
+    Board Size, 141.016mmx102.016mm
+    Components on board, 77
+count : 2
+
+Plated Hole Size, Pads, Vias
+    0.5mm, 2, 0
+    0.51mm, 4, 0
+    0.8128mm, 76, 0
+    0.9652mm, 116, 134
+    1.016mm, 20, 0
+    1.1mm, 3, 0
+    1.3mm, 2, 0
+    1.5mm, 8, 0
+    2.2mm, 2, 0
+count : 9

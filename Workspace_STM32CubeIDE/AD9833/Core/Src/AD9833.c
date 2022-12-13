@@ -7,9 +7,7 @@
 #include "main.h"
 #include "AD9833.h"
 
-extern SPI_HandleTypeDef hspi3;
-
-#define ROUND_TO_INT(x) ((uint32_t)((x)+0.5))
+extern SPI_HandleTypeDef hspi2;
 
 void AD9833_Init(void)
 {
@@ -31,9 +29,9 @@ void AD9833_Init(void)
 	 * D01 = 0: para modo senoidal
 	 * D00 = 0: reservado, se debe escribir 0
 	 */
-	HAL_GPIO_WritePin(SPI3_CS_GPIO_Port, SPI3_CS_Pin, GPIO_PIN_RESET);
-	HAL_SPI_Transmit(&hspi3, (uint8_t*)&control_reg, 1, HAL_MAX_DELAY);	//Escribo registro de control
-	HAL_GPIO_WritePin(SPI3_CS_GPIO_Port, SPI3_CS_Pin, GPIO_PIN_SET);
+	HAL_GPIO_WritePin(DDS_CS_GPIO_Port, DDS_CS_Pin, GPIO_PIN_RESET);
+	HAL_SPI_Transmit(&hspi2, (uint8_t*)&control_reg, 1, HAL_MAX_DELAY);	//Escribo registro de control
+	HAL_GPIO_WritePin(DDS_CS_GPIO_Port, DDS_CS_Pin, GPIO_PIN_SET);
 
 	/******************************************/
 
@@ -44,21 +42,21 @@ void AD9833_Init(void)
 	 * D11 a D0 = 0: se escribe esa fase al registro (no importa la fase que tiene)
 	 */
 
-	HAL_GPIO_WritePin(SPI3_CS_GPIO_Port, SPI3_CS_Pin, GPIO_PIN_RESET);
-	HAL_SPI_Transmit(&hspi3, (uint8_t*)&phase_reg, 1, HAL_MAX_DELAY);	//Escribo en PHASE0 la fase de 0
-	HAL_GPIO_WritePin(SPI3_CS_GPIO_Port, SPI3_CS_Pin, GPIO_PIN_SET);
+	HAL_GPIO_WritePin(DDS_CS_GPIO_Port, DDS_CS_Pin, GPIO_PIN_RESET);
+	HAL_SPI_Transmit(&hspi2, (uint8_t*)&phase_reg, 1, HAL_MAX_DELAY);	//Escribo en PHASE0 la fase de 0
+	HAL_GPIO_WritePin(DDS_CS_GPIO_Port, DDS_CS_Pin, GPIO_PIN_SET);
 
 	/******************************************/
 	control_reg = 0b0010000000000000; //Saco el reset con D08 = 0, la salida se activa luego de 8 ciclos del MasterClock
 
-	HAL_GPIO_WritePin(SPI3_CS_GPIO_Port, SPI3_CS_Pin, GPIO_PIN_RESET);
-	HAL_SPI_Transmit(&hspi3, (uint8_t*)&control_reg, 1, HAL_MAX_DELAY);	//Escribo registro de control
-	HAL_GPIO_WritePin(SPI3_CS_GPIO_Port, SPI3_CS_Pin, GPIO_PIN_SET);
+	HAL_GPIO_WritePin(DDS_CS_GPIO_Port, DDS_CS_Pin, GPIO_PIN_RESET);
+	HAL_SPI_Transmit(&hspi2, (uint8_t*)&control_reg, 1, HAL_MAX_DELAY);	//Escribo registro de control
+	HAL_GPIO_WritePin(DDS_CS_GPIO_Port, DDS_CS_Pin, GPIO_PIN_SET);
 
 	/******************************************/
 
 	AD9833_SetFrequency(1);	//Escribo FREQ0 con la frecuencia de 1Hz
-
+	AD9833_SetEnabled(FALSE);
 }
 
 
@@ -77,9 +75,9 @@ void AD9833_SetFrequency(uint32_t freq_out)
 	 * D15,D14 = 01 : Escribo en registro FREQ0
 	 */
 
-	HAL_GPIO_WritePin(SPI3_CS_GPIO_Port, SPI3_CS_Pin, GPIO_PIN_RESET);
-	HAL_SPI_Transmit(&hspi3, (uint8_t*)freq_reg_vector, 2, HAL_MAX_DELAY);	//Escribo en FREQ0 la frecuencia de 1Hz
-	HAL_GPIO_WritePin(SPI3_CS_GPIO_Port, SPI3_CS_Pin, GPIO_PIN_SET);
+	HAL_GPIO_WritePin(DDS_CS_GPIO_Port, DDS_CS_Pin, GPIO_PIN_RESET);
+	HAL_SPI_Transmit(&hspi2, (uint8_t*)freq_reg_vector, 2, HAL_MAX_DELAY);	//Escribo en FREQ0 la frecuencia de 1Hz
+	HAL_GPIO_WritePin(DDS_CS_GPIO_Port, DDS_CS_Pin, GPIO_PIN_SET);
 }
 
 void AD9833_SetEnabled(uint8_t state)
@@ -91,9 +89,9 @@ void AD9833_SetEnabled(uint8_t state)
 	else
 		control_reg = 1<<13 | 0xC0;	//D7,D6 = 11: Deshabilito DAC y clock interno que actualiza la salida (los registros se pueden escribir)
 
-	HAL_GPIO_WritePin(SPI3_CS_GPIO_Port, SPI3_CS_Pin, GPIO_PIN_RESET);
+	HAL_GPIO_WritePin(DDS_CS_GPIO_Port, DDS_CS_Pin, GPIO_PIN_RESET);
 	HAL_Delay(1);
-	HAL_SPI_Transmit(&hspi3, (uint8_t*)&control_reg, 1, HAL_MAX_DELAY);	//Escribo registro de control
+	HAL_SPI_Transmit(&hspi2, (uint8_t*)&control_reg, 1, HAL_MAX_DELAY);	//Escribo registro de control
 	HAL_Delay(1);
-	HAL_GPIO_WritePin(SPI3_CS_GPIO_Port, SPI3_CS_Pin, GPIO_PIN_SET);
+	HAL_GPIO_WritePin(DDS_CS_GPIO_Port, DDS_CS_Pin, GPIO_PIN_SET);
 }

@@ -104,7 +104,6 @@ local.properties
 
 # Executables
 *.exe
-*.out
 !imageconvert.out
 !fontconvert.out
 *.app

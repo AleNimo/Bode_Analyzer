@@ -46,7 +46,7 @@ extern "C" {
 
 /* Exported macro ------------------------------------------------------------*/
 /* USER CODE BEGIN EM */
-
+#define ROUND_TO_INT(x) ((uint32_t)((x)+0.5))
 /* USER CODE END EM */
 
 /* Exported functions prototypes ---------------------------------------------*/
@@ -72,8 +72,8 @@ void Error_Handler(void);
 #define TMS_GPIO_Port GPIOA
 #define TCK_Pin GPIO_PIN_14
 #define TCK_GPIO_Port GPIOA
-#define SPI3_CS_Pin GPIO_PIN_11
-#define SPI3_CS_GPIO_Port GPIOC
+#define DDS_CS_Pin GPIO_PIN_11
+#define DDS_CS_GPIO_Port GPIOC
 #define SWO_Pin GPIO_PIN_3
 #define SWO_GPIO_Port GPIOB
 /* USER CODE BEGIN Private defines */

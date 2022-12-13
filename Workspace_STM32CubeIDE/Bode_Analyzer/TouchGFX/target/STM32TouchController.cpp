@@ -22,6 +22,7 @@
 
 #include <STM32TouchController.hpp>
 
+extern uint8_t touchEnabled;
 
 void STM32TouchController::init()
 {
@@ -45,14 +46,19 @@ bool STM32TouchController::sampleTouch(int32_t& x, int32_t& y)
      * By default sampleTouch is called every tick, this can be adjusted by HAL::setTouchSampleRate(int8_t);
      *
      */
-	if(XPT2046_TouchGetCoordinates(&x_driver, &y_driver))
+	if(touchEnabled)
 	{
-		x = x_driver;
-		y=y_driver;
+		if(XPT2046_TouchGetCoordinates(&x_driver, &y_driver))
+		{
+			x = x_driver;
+			y=y_driver;
 
-		return true;
-	}else
+			return true;
+		}else
 
+			return false;
+	}
+	else
 		return false;
 }
 
