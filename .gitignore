@@ -104,6 +104,7 @@ local.properties
 
 # Executables
 *.exe
+*.out
 !imageconvert.out
 !fontconvert.out
 *.app
@@ -173,7 +174,5 @@ scripts/__pycache__/
 
 ### TouchGFX ###
 generated/
-
-build/
 
 simulator/msvs/.vs
