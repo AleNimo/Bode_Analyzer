@@ -30,7 +30,7 @@ void Model::Freq_Config(float freq_min, float freq_max, unsigned int points_deca
 
 	freq[0] = freq_min;
 
-	while(freq[i-1] < freq_max)
+	while((freq[i-1] < freq_max) && (i < MAX_FREQ_POINTS))
 	{
 		freq[i] = freq[i-1] * step ;
 		i++;
