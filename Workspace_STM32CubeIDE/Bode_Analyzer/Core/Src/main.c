@@ -2494,22 +2494,28 @@ void MeasureTask(void* pvParameters)
 			//Cambio de frecuencia (frecuencia redondeada a entero por el momento)
 			AD9833_SetFrequency(ROUND_TO_INT(freq[i]));
 
-			vTaskDelay(pdMS_TO_TICKS(10));
+			vTaskDelay(pdMS_TO_TICKS(1));
 			//Desactivo mosfets
 			HAL_GPIO_WritePin(RST_VIN_GPIO_Port, RST_VIN_Pin, GPIO_PIN_RESET);
 			HAL_GPIO_WritePin(RST_VOUT_GPIO_Port, RST_VOUT_Pin, GPIO_PIN_RESET);
-			vTaskDelay(pdMS_TO_TICKS(100));
+
+			if(freq[i]<10)
+				vTaskDelay(pdMS_TO_TICKS(1000));
+			else
+				vTaskDelay(pdMS_TO_TICKS(100));
 
 			//libero tarea de MEDICION DE MAGNITUD:
 			xSemaphoreGive(sem_mod);
 
 			//libero tarea de MEDICION DE FASE:
-			xQueueSend(queue_freq_phase, &freq[i], portMAX_DELAY);
+			if(freq[i]<10000)
+				xQueueSend(queue_freq_phase, &freq[i], portMAX_DELAY);
 
 			//Me quedo esperando los resultados de cada tarea
 			xQueueReceive(queue_mod, &mag[i], portMAX_DELAY);
 
-			xQueueReceive(queue_phase, &phase[i], portMAX_DELAY);
+			if(freq[i]<10000)
+				xQueueReceive(queue_phase, &phase[i], portMAX_DELAY);
 
 			//Desactivo el generador para luego activarlo en la proxima frecuencia
 //			AD9833_SetEnabled(FALSE);
@@ -2557,7 +2563,7 @@ void ModuleTask(void *pvParameters)
 
 		while(medicion < MOD_SAMPLES)
 		{
-			ADC_SelectChannel(ADC_CHANNEL_VREFINT);
+			ADC_SelectChannel(ADC_CHANNEL_2);
 			HAL_ADC_Start(&hadc1);
 			HAL_ADC_PollForConversion(&hadc1, HAL_MAX_DELAY);
 			ADC_buffer_in[medicion] = HAL_ADC_GetValue(&hadc1);
@@ -2568,6 +2574,8 @@ void ModuleTask(void *pvParameters)
 			HAL_ADC_PollForConversion(&hadc1, HAL_MAX_DELAY);
 			ADC_buffer_out[medicion] = HAL_ADC_GetValue(&hadc1);
 			HAL_ADC_Stop(&hadc1);
+
+			vTaskDelay(pdMS_TO_TICKS(1));	//Tiempo entre muestras
 
 			medicion++;
 		}

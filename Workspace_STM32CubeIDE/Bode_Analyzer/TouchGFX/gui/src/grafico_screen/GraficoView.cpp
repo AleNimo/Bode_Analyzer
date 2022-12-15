@@ -226,13 +226,15 @@ void GraficoView::DataDisplay(float* freq,float*mag,float*phase,unsigned int num
 
 		char freq_string[6];
 
+		memset(freq_string, 0, sizeof(freq_string));
+
 		if(range_min*pow(10,i)>100)
 		{
 			sprintf(freq_string, "%d K", (int)(range_min*pow(10,i)/1000));
 		}else
 			sprintf(freq_string, "%d", (int)(range_min*pow(10,i)));
 
-		memset(freq_label_buffer[i],0,DECADE_0_SIZE);
+		memset(freq_label_buffer[i],0,sizeof(freq_label_buffer[i]));
 		Unicode::strncpy(freq_label_buffer[i], freq_string, Unicode::strlen(freq_string));
 		//textArea1.resizeToCurrentText();
 		freq_label[i]->setX((320-30)/decades*(i)+30-15);
