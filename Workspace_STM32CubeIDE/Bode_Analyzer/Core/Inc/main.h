@@ -41,11 +41,20 @@ extern "C" {
 
 /* Exported constants --------------------------------------------------------*/
 /* USER CODE BEGIN EC */
-#define N_SAMPLES 20	//SAMPLES de entrada + salida tomadas con el ADC
+
+
+#define LOW_FREQ 0
+#define HIGH_FREQ 1
+
+
+#define MOD_SAMPLES 10	//SAMPLES de entrada / SAMPLES de salida tomadas con el ADC
+#define PHASE_SAMPLES 1
 
 #define MAX_FREQ_POINTS 600
 
 #define FREQ_TIM1 84000000
+
+
 /* USER CODE END EC */
 
 /* Exported macro ------------------------------------------------------------*/

@@ -14,9 +14,11 @@
 #define INC_AD9833_H_
 
 /*Definiciones*/
-#define MASTER_CLOCK 25000000	//Se debe testear que sean 25MHz
+
 #define TRUE 1
 #define FALSE 0
+
+#define MASTER_CLOCK 25000000	//Se debe testear que sean 25MHz
 
 /*Prototipos de Funciones*/
 
