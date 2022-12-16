@@ -73,6 +73,5 @@ release/
 # --------
 *.dll
 *.exe
-
-!LIBUSB_Binary/*
+*.stash
 
