@@ -1,25 +1,23 @@
 #ifndef FILTER_H
 #define FILTER_H
 
+#include "qcustomplot.h"
 
-
+#define MAX_POINTS 600
 
 class Filter
 {
 
 public:
-    Filter(float* freq,float*mag,float* phase,unsigned char total_points);
+    Filter(float* freq,float*mag,float* phase,unsigned int total_points);
     ~Filter();
 
+    QVector<QCPGraphData> mag;
+    QVector<QCPGraphData> phase; //Agregar retardo de grupo
 
-private:
-
-    float* freq;
-    float* mag;
-    float* phase;
-    float* group_delay;
     unsigned char total_points;
 
+private:
 
 };
 

@@ -3,7 +3,6 @@
 
 #include "libusb.h"
 
-
 #define MY_VENDOR  ((uint16_t) 1155)//0x0483)
 #define MY_PRODUCT ((uint16_t) 22352)//0x5910)
 

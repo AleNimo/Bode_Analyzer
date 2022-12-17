@@ -4,7 +4,6 @@
 #include <QDebug>
 #include <math.h>
 #include <QList>
-#include "qcustomplot.h"
 
 #include "globales.h"
 #include "libusb.h"
@@ -16,36 +15,37 @@ MainWindow::MainWindow(QWidget *parent)
     , ui(new Ui::MainWindow)
 {
     ui->setupUi(this);
+
     ui->Connect_USB->setEnabled(true);
 
     ui->PlotWidget->plotLayout()->clear();
 
-    // add the first axis rect in second row (row index 1):
-    QCPAxisRect *bottomAxisRect = new QCPAxisRect(ui->PlotWidget);
-    ui->PlotWidget->plotLayout()->addElement(1, 0, bottomAxisRect);
+    magAxisRect = new QCPAxisRect(ui->PlotWidget);
+    phaseAxisRect = new QCPAxisRect(ui->PlotWidget);
 
-    // create a sub layout that we'll place in first row:
-    QCPLayoutGrid *subLayout = new QCPLayoutGrid;
-    ui->PlotWidget->plotLayout()->addElement(0, 0, subLayout);
+    ui->PlotWidget->plotLayout()->addElement(0, 0, magAxisRect);
+    ui->PlotWidget->plotLayout()->addElement(1, 0, phaseAxisRect);
 
-    QCPAxisRect *leftAxisRect = new QCPAxisRect(ui->PlotWidget);
-    QCPAxisRect *rightAxisRect = new QCPAxisRect(ui->PlotWidget);
-
-    subLayout->addElement(0, 0, leftAxisRect);
-    subLayout->addElement(0, 1, rightAxisRect);
-    subLayout->setColumnStretchFactor(0, 3); // left axis rect shall have 60% of width
-    subLayout->setColumnStretchFactor(1, 2); // right one only 40% (3:2 = 60:40)
+    //Se colocan los ejes en la capa de ejes, y la grilla en capa de grilla para dibujarlos en orden
     QList<QCPAxis*> allAxes;
-    allAxes << bottomAxisRect->axes() << leftAxisRect->axes() << rightAxisRect->axes();
+    allAxes << magAxisRect->axes() << phaseAxisRect->axes();
     foreach (QCPAxis *axis, allAxes)
     {
         axis->setLayer("axes");
         axis->grid()->setLayer("grid");
     }
 
+    //Eje de frecuencias logarítmico
+    magAxisRect->axis(QCPAxis::atBottom)->grid()->setSubGridVisible(true);
+    magAxisRect->axis(QCPAxis::atBottom)->setScaleType(QCPAxis::stLogarithmic);
 
+    phaseAxisRect->axis(QCPAxis::atBottom)->grid()->setSubGridVisible(true);
+    phaseAxisRect->axis(QCPAxis::atBottom)->setScaleType(QCPAxis::stLogarithmic);
 
-    //ui->gridLayout->addWidget(chartView);
+    //Para separarlos en decadas
+    QSharedPointer<QCPAxisTickerLog> logTicker(new QCPAxisTickerLog);
+    magAxisRect->axis(QCPAxis::atBottom)->setTicker(logTicker);
+    phaseAxisRect->axis(QCPAxis::atBottom)->setTicker(logTicker);
 }
 
 MainWindow::~MainWindow()
@@ -148,57 +148,85 @@ void MainWindow::on_Connect_USB_clicked()
 void MainWindow::on_Receive_USB_clicked()
 {
 
-    unsigned char RxData [TRANSFER_SIZE];
+//    unsigned char RxData [TRANSFER_SIZE];
 
-    QList<float*> freq_mag_phase;
+//    QList<float*> freq_mag_phase;
 
-    unsigned char RxDataTotal[2400];
+//    unsigned char RxDataTotal[2400];
 
-    float* RxData_float;
+//    float* RxData_float;
 
-    int actual_length;
+//    int actual_length;
 
-    libusb_claim_interface(dev_handle, 0);
+//    libusb_claim_interface(dev_handle, 0);
 
-    //38 transferencias de usb para recuperar 4bytes * 600 de 64 bytes cada transfer
+//    //38 transferencias de usb para recuperar 4bytes * 600 de 64 bytes cada transfer
 
-    //pide primero la cantidad de puntos calculados
-    unsigned char total_points = 0;
-    libusb_interrupt_transfer(dev_handle , 0x81 , &total_points , 1 , &actual_length , 0);
+//    //pide primero la cantidad de puntos calculados
+//    unsigned char total_points = 0;
+//    libusb_interrupt_transfer(dev_handle , 0x81 , &total_points , 1 , &actual_length , 0);
 
-    if(total_points>0) // hay datos
-    {
-        for(unsigned char n = 0; n<3;n++)
-        {
-            for(unsigned char i = 0; i<37;i++)
-            {
-                libusb_interrupt_transfer(dev_handle , 0x81 , RxData , sizeof (RxData) , &actual_length , 0);
-                for(unsigned char j = 0;j<64;j++)
-                    RxDataTotal[i*64+j] = RxData[j];
-            }
-            //ultima transferencia
-            libusb_interrupt_transfer(dev_handle , 0x81 , RxData , sizeof (RxData) , &actual_length , 0);
-            for(unsigned char j = 0;j<32;j++)
-                RxDataTotal[37*64+j] = RxData[j];
+//    if(total_points>0) // hay datos
+//    {
+//        for(unsigned char n = 0; n<3;n++)
+//        {
+//            for(unsigned char i = 0; i<37;i++)
+//            {
+//                libusb_interrupt_transfer(dev_handle , 0x81 , RxData , sizeof (RxData) , &actual_length , 0);
+//                for(unsigned char j = 0;j<64;j++)
+//                    RxDataTotal[i*64+j] = RxData[j];
+//            }
+//            //ultima transferencia
+//            libusb_interrupt_transfer(dev_handle , 0x81 , RxData , sizeof (RxData) , &actual_length , 0);
+//            for(unsigned char j = 0;j<32;j++)
+//                RxDataTotal[37*64+j] = RxData[j];
 
-            //Casteo de la data en byts de freq,mag,phase a float
-            float* aux = new float[total_points];
-            aux = (float*) RxDataTotal;
-            freq_mag_phase.append(aux);
+//            //Casteo de la data en byts de freq,mag,phase a float
+//            float* aux = new float[total_points];
+//            aux = (float*) RxDataTotal;
+//            freq_mag_phase.append(aux);
 
-        }
+//        }
 
-        Filter* filtro = new Filter(freq_mag_phase[0],freq_mag_phase[1],freq_mag_phase[2],total_points);
-        filters.append(filtro);
-//        ui->PlotWidget->addGraph();
-//        ui->PlotWidget->graph(0)->setData()
-        //ui->gridLayout->addWidget(filters.last()->chart);
+//        Filter* filtro = new Filter(freq_mag_phase[0],freq_mag_phase[1],freq_mag_phase[2],total_points);
+//        filters.append(filtro);
 
-    }else
-        //no hay datos
+//        ui->PlotWidget->addGraph(magAxisRect->axis(QCPAxis::atBottom), magAxisRect->axis(QCPAxis::atLeft));
+//        ui->PlotWidget->graph(0)->setPen(QPen(Qt::red));
+//        ui->PlotWidget->graph(0)->data()->set(filters[0]->mag);
 
-    
-    qDebug() << "Dispositivo N°:" << Dispositivo;
+//        ui->PlotWidget->addGraph(phaseAxisRect->axis(QCPAxis::atBottom), phaseAxisRect->axis(QCPAxis::atLeft));
+//        ui->PlotWidget->graph(1)->setPen(QPen(Qt::blue));
+//        ui->PlotWidget->graph(1)->data()->set(filters[0]->phase);
+
+
+////        ui->PlotWidget->addGraph();
+////        ui->PlotWidget->graph(0)->setData()
+//        //ui->gridLayout->addWidget(filters.last()->chart);
+
+//    }else
+//        //no hay datos
+
+    float freq[] = {1, 50, 100000};
+    float mag[] = {0, -3, -40};
+    float phase[] = {0, -45, -90};
+    unsigned int total_points = 3;
+
+    Filter* filtro = new Filter(freq,mag,phase,total_points);
+    filters.append(filtro);
+
+    ui->PlotWidget->addGraph(magAxisRect->axis(QCPAxis::atBottom), magAxisRect->axis(QCPAxis::atLeft));
+    ui->PlotWidget->graph(0)->setPen(QPen(Qt::red));
+    ui->PlotWidget->graph(0)->data()->set(filters[0]->mag);
+
+    ui->PlotWidget->addGraph(phaseAxisRect->axis(QCPAxis::atBottom), phaseAxisRect->axis(QCPAxis::atLeft));
+    ui->PlotWidget->graph(1)->setPen(QPen(Qt::blue));
+    ui->PlotWidget->graph(1)->data()->set(filters[0]->phase);
+
+    ui->PlotWidget->rescaleAxes();
+    ui->PlotWidget->replot();
+    ui->PlotWidget->setInteractions(QCP::iRangeDrag | QCP::iRangeZoom);
+    //qDebug() << "Dispositivo N°:" << Dispositivo;
 }
 
 

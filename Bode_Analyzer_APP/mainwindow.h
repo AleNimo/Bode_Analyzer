@@ -6,6 +6,7 @@
 
 #include <QLayout>
 #include <QList>
+#include "qcustomplot.h"
 
 QT_BEGIN_NAMESPACE
 namespace Ui { class MainWindow; }
@@ -27,6 +28,8 @@ private slots:
 private:
     Ui::MainWindow *ui;
 
+    QCPAxisRect *magAxisRect;
+    QCPAxisRect *phaseAxisRect;
 
     QList<Filter*> filters;
 
