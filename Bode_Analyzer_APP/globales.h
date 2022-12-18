@@ -3,10 +3,10 @@
 
 #include "libusb.h"
 
-#define MY_VENDOR  ((uint16_t) 1155)//0x0483)
+#define MY_VENDOR  ((uint16_t) 10)//0xA)
 #define MY_PRODUCT ((uint16_t) 22352)//0x5910)
 
-#define TRANSFER_SIZE ((uint8_t) 64)
+#define TRANSFER_SIZE ((uint8_t) 100)
 
 libusb_device **devs;
 libusb_context *ctx = NULL;

@@ -52,7 +52,7 @@ extern "C" {
 
 #define MAX_FREQ_POINTS 600
 
-#define FREQ_TIM1 84000000
+#define FREQ_TIM1 72000000
 
 
 /* USER CODE END EC */

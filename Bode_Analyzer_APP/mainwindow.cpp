@@ -147,85 +147,85 @@ void MainWindow::on_Connect_USB_clicked()
 
 void MainWindow::on_Receive_USB_clicked()
 {
+    int r;
 
 //    unsigned char RxData [TRANSFER_SIZE];
 
 //    QList<float*> freq_mag_phase;
 
-//    unsigned char RxDataTotal[2400];
+    unsigned char freq_char[2400];
+    unsigned char mag_char[2400];
+    unsigned char phase_char[2400];
 
-//    float* RxData_float;
+    int actual_length;
 
-//    int actual_length;
+    libusb_claim_interface(dev_handle, 0);
 
-//    libusb_claim_interface(dev_handle, 0);
+    //38 transferencias de usb para recuperar 4bytes * 600 de 64 bytes cada transfer
 
-//    //38 transferencias de usb para recuperar 4bytes * 600 de 64 bytes cada transfer
+    //pide primero la cantidad de puntos calculados
+    unsigned char total_points_char[4];
 
-//    //pide primero la cantidad de puntos calculados
-//    unsigned char total_points = 0;
-//    libusb_interrupt_transfer(dev_handle , 0x81 , &total_points , 1 , &actual_length , 0);
+    r = libusb_interrupt_transfer(dev_handle, 0x81 , total_points_char, 4 , &actual_length, 0);
 
-//    if(total_points>0) // hay datos
-//    {
-//        for(unsigned char n = 0; n<3;n++)
-//        {
-//            for(unsigned char i = 0; i<37;i++)
-//            {
-//                libusb_interrupt_transfer(dev_handle , 0x81 , RxData , sizeof (RxData) , &actual_length , 0);
-//                for(unsigned char j = 0;j<64;j++)
-//                    RxDataTotal[i*64+j] = RxData[j];
-//            }
-//            //ultima transferencia
-//            libusb_interrupt_transfer(dev_handle , 0x81 , RxData , sizeof (RxData) , &actual_length , 0);
-//            for(unsigned char j = 0;j<32;j++)
-//                RxDataTotal[37*64+j] = RxData[j];
+    unsigned int total_points = *(unsigned int*)total_points_char;
 
-//            //Casteo de la data en byts de freq,mag,phase a float
-//            float* aux = new float[total_points];
-//            aux = (float*) RxDataTotal;
-//            freq_mag_phase.append(aux);
+    if(total_points>0) // hay datos
+    {
+        libusb_interrupt_transfer(dev_handle, 0x81, freq_char, 4*total_points , &actual_length , 0);
 
-//        }
+        libusb_interrupt_transfer(dev_handle , 0x81 , mag_char , 4*total_points , &actual_length , 0);
 
-//        Filter* filtro = new Filter(freq_mag_phase[0],freq_mag_phase[1],freq_mag_phase[2],total_points);
-//        filters.append(filtro);
+        libusb_interrupt_transfer(dev_handle , 0x81 , phase_char , 4*total_points , &actual_length , 0);
 
-//        ui->PlotWidget->addGraph(magAxisRect->axis(QCPAxis::atBottom), magAxisRect->axis(QCPAxis::atLeft));
-//        ui->PlotWidget->graph(0)->setPen(QPen(Qt::red));
-//        ui->PlotWidget->graph(0)->data()->set(filters[0]->mag);
+        //Casteo de la data en byts de freq,mag,phase a float
+        float* freq_float = new float[total_points];
+        freq_float = (float*)freq_char;
 
-//        ui->PlotWidget->addGraph(phaseAxisRect->axis(QCPAxis::atBottom), phaseAxisRect->axis(QCPAxis::atLeft));
-//        ui->PlotWidget->graph(1)->setPen(QPen(Qt::blue));
-//        ui->PlotWidget->graph(1)->data()->set(filters[0]->phase);
+        float* mag_float = new float[total_points];
+        mag_float = (float*)mag_char;
+
+        float* phase_float = new float[total_points];
+        phase_float = (float*)phase_char;
+
+        Filter* filtro = new Filter(freq_float,mag_float,phase_float,total_points);
+        filters.append(filtro);
+
+        ui->PlotWidget->addGraph(magAxisRect->axis(QCPAxis::atBottom), magAxisRect->axis(QCPAxis::atLeft));
+        ui->PlotWidget->graph(0)->setPen(QPen(Qt::red));
+        ui->PlotWidget->graph(0)->data()->set(filters[0]->mag);
+
+        ui->PlotWidget->addGraph(phaseAxisRect->axis(QCPAxis::atBottom), phaseAxisRect->axis(QCPAxis::atLeft));
+        ui->PlotWidget->graph(1)->setPen(QPen(Qt::blue));
+        ui->PlotWidget->graph(1)->data()->set(filters[0]->phase);
 
 
-////        ui->PlotWidget->addGraph();
-////        ui->PlotWidget->graph(0)->setData()
-//        //ui->gridLayout->addWidget(filters.last()->chart);
+//        ui->PlotWidget->addGraph();
+//        ui->PlotWidget->graph(0)->setData()
+        //ui->gridLayout->addWidget(filters.last()->chart);
 
-//    }else
-//        //no hay datos
+    }
+        //no hay datos
 
-    float freq[] = {1, 50, 100000};
-    float mag[] = {0, -3, -40};
-    float phase[] = {0, -45, -90};
-    unsigned int total_points = 3;
+//    float freq[] = {1, 50, 100000};
+//    float mag[] = {0, -3, -40};
+//    float phase[] = {0, -45, -90};
+//    unsigned int total_points = 3;
 
-    Filter* filtro = new Filter(freq,mag,phase,total_points);
-    filters.append(filtro);
+//    Filter* filtro = new Filter(freq,mag,phase,total_points);
+//    filters.append(filtro);
 
-    ui->PlotWidget->addGraph(magAxisRect->axis(QCPAxis::atBottom), magAxisRect->axis(QCPAxis::atLeft));
-    ui->PlotWidget->graph(0)->setPen(QPen(Qt::red));
-    ui->PlotWidget->graph(0)->data()->set(filters[0]->mag);
+//    ui->PlotWidget->addGraph(magAxisRect->axis(QCPAxis::atBottom), magAxisRect->axis(QCPAxis::atLeft));
+//    ui->PlotWidget->graph(0)->setPen(QPen(Qt::red));
+//    ui->PlotWidget->graph(0)->data()->set(filters[0]->mag);
 
-    ui->PlotWidget->addGraph(phaseAxisRect->axis(QCPAxis::atBottom), phaseAxisRect->axis(QCPAxis::atLeft));
-    ui->PlotWidget->graph(1)->setPen(QPen(Qt::blue));
-    ui->PlotWidget->graph(1)->data()->set(filters[0]->phase);
+//    ui->PlotWidget->addGraph(phaseAxisRect->axis(QCPAxis::atBottom), phaseAxisRect->axis(QCPAxis::atLeft));
+//    ui->PlotWidget->graph(1)->setPen(QPen(Qt::blue));
+//    ui->PlotWidget->graph(1)->data()->set(filters[0]->phase);
 
-    ui->PlotWidget->rescaleAxes();
-    ui->PlotWidget->replot();
-    ui->PlotWidget->setInteractions(QCP::iRangeDrag | QCP::iRangeZoom);
+//    ui->PlotWidget->rescaleAxes();
+//    ui->PlotWidget->replot();
+//    ui->PlotWidget->setInteractions(QCP::iRangeDrag | QCP::iRangeZoom);
     //qDebug() << "Dispositivo N°:" << Dispositivo;
 }
 
