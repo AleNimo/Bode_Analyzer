@@ -60,7 +60,7 @@ void AD9833_Init(void)
 }
 
 
-void AD9833_SetFrequency(uint32_t freq_out)
+float AD9833_SetFrequency(float freq_out)
 {
 	//Freq_reg = Fout * 2^28 / F_MasterClock
 
@@ -78,6 +78,8 @@ void AD9833_SetFrequency(uint32_t freq_out)
 	HAL_GPIO_WritePin(DDS_CS_GPIO_Port, DDS_CS_Pin, GPIO_PIN_RESET);
 	HAL_SPI_Transmit(&hspi2, (uint8_t*)freq_reg_vector, 2, HAL_MAX_DELAY);	//Escribo en FREQ0 la frecuencia de 1Hz
 	HAL_GPIO_WritePin(DDS_CS_GPIO_Port, DDS_CS_Pin, GPIO_PIN_SET);
+
+	return ((float)auxiliar / 268435456.0) * MASTER_CLOCK ;
 }
 
 void AD9833_SetEnabled(uint8_t state)

@@ -6,12 +6,13 @@
   ******************************************************************************
   * @attention
   *
-  * Copyright (c) 2015 STMicroelectronics.
-  * All rights reserved.
+  * <h2><center>&copy; Copyright (c) 2015 STMicroelectronics.
+  * All rights reserved.</center></h2>
   *
-  * This software is licensed under terms that can be found in the LICENSE file
-  * in the root directory of this software component.
-  * If no LICENSE file comes with this software, it is provided AS-IS.
+  * This software component is licensed by ST under Ultimate Liberty license
+  * SLA0044, the "License"; You may not use this file except in compliance with
+  * the License. You may obtain a copy of the License at:
+  *                      www.st.com/SLA0044
   *
   ******************************************************************************
   */
@@ -40,21 +41,17 @@ extern "C" {
 /** @defgroup USBD_CUSTOM_HID_Exported_Defines
   * @{
   */
-#ifndef CUSTOM_HID_EPIN_ADDR
 #define CUSTOM_HID_EPIN_ADDR                         0x81U
-#endif /* CUSTOM_HID_EPIN_ADDR */
 
 #ifndef CUSTOM_HID_EPIN_SIZE
-#define CUSTOM_HID_EPIN_SIZE                         0x02U
-#endif /* CUSTOM_HID_EPIN_SIZE */
+#define CUSTOM_HID_EPIN_SIZE                         0x40U
+#endif
 
-#ifndef CUSTOM_HID_EPOUT_ADDR
 #define CUSTOM_HID_EPOUT_ADDR                        0x01U
-#endif /* CUSTOM_HID_EPOUT_ADDR */
 
 #ifndef CUSTOM_HID_EPOUT_SIZE
-#define CUSTOM_HID_EPOUT_SIZE                        0x02U
-#endif /* CUSTOM_HID_EPOUT_SIZE*/
+#define CUSTOM_HID_EPOUT_SIZE                        0x40U
+#endif
 
 #define USB_CUSTOM_HID_CONFIG_DESC_SIZ               41U
 #define USB_CUSTOM_HID_DESC_SIZ                      9U
@@ -105,7 +102,7 @@ typedef struct _USBD_CUSTOM_HID_Itf
   uint8_t *pReport;
   int8_t (* Init)(void);
   int8_t (* DeInit)(void);
-  int8_t (* OutEvent)(uint8_t event_idx, uint8_t state);
+  int8_t (* OutEvent)(uint8_t *);
 
 } USBD_CUSTOM_HID_ItfTypeDef;
 
@@ -118,23 +115,6 @@ typedef struct
   uint32_t IsReportAvailable;
   CUSTOM_HID_StateTypeDef state;
 } USBD_CUSTOM_HID_HandleTypeDef;
-
-/*
- * HID Class specification version 1.1
- * 6.2.1 HID Descriptor
- */
-
-typedef struct
-{
-  uint8_t           bLength;
-  uint8_t           bDescriptorTypeCHID;
-  uint16_t          bcdCUSTOM_HID;
-  uint8_t           bCountryCode;
-  uint8_t           bNumDescriptors;
-  uint8_t           bDescriptorType;
-  uint16_t          wItemLength;
-} __PACKED USBD_DescTypeDef;
-
 /**
   * @}
   */
@@ -187,3 +167,4 @@ uint8_t USBD_CUSTOM_HID_RegisterInterface(USBD_HandleTypeDef *pdev,
   * @}
   */
 
+/************************ (C) COPYRIGHT STMicroelectronics *****END OF FILE****/

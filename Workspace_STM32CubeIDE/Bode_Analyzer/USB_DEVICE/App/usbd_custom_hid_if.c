@@ -90,9 +90,10 @@ uint8_t buffer[0x40];
   */
 
 /** Usb HID report descriptor. */
+/** Usb HID report descriptor. */
 __ALIGN_BEGIN static uint8_t CUSTOM_HID_ReportDesc_FS[USBD_CUSTOM_HID_REPORT_DESC_SIZE] __ALIGN_END =
 {
-  /* USER CODE BEGIN 0 */
+/* USER CODE BEGIN 0 */
 0x06, 0x00, 0xff,
 //Usage Page(Undefined
 0x09, 0x01,
@@ -123,10 +124,9 @@ __ALIGN_BEGIN static uint8_t CUSTOM_HID_ReportDesc_FS[USBD_CUSTOM_HID_REPORT_DES
 // USAGE (
 0xb1, 0x02,
 // FEATURE Data,Var,Abs
-  /* USER CODE END 0 */
-  0xC0    /*     END_COLLECTION	             */
+/* USER CODE END 0 */
+0xC0	/* END_COLLECTION */
 };
-
 /* USER CODE BEGIN PRIVATE_VARIABLES */
 
 /* USER CODE END PRIVATE_VARIABLES */
@@ -155,7 +155,7 @@ extern USBD_HandleTypeDef hUsbDeviceFS;
 
 static int8_t CUSTOM_HID_Init_FS(void);
 static int8_t CUSTOM_HID_DeInit_FS(void);
-static int8_t CUSTOM_HID_OutEvent_FS(uint8_t event_idx, uint8_t state);
+static int8_t CUSTOM_HID_OutEvent_FS(uint8_t * state);
 
 /**
   * @}
@@ -204,7 +204,7 @@ static int8_t CUSTOM_HID_DeInit_FS(void)
   * @param  state: Event state
   * @retval USBD_OK if all operations are OK else USBD_FAIL
   */
-static int8_t CUSTOM_HID_OutEvent_FS(uint8_t event_idx, uint8_t state)
+static int8_t CUSTOM_HID_OutEvent_FS(uint8_t* state)
 {
   /* USER CODE BEGIN 6 */
   memcpy (buffer, state, 0x40);
@@ -245,4 +245,6 @@ static int8_t USBD_CUSTOM_HID_SendReport_FS(uint8_t *report, uint16_t len)
 /**
   * @}
   */
+
+/************************ (C) COPYRIGHT STMicroelectronics *****END OF FILE****/
 

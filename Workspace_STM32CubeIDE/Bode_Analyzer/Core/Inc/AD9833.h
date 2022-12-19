@@ -28,7 +28,7 @@
 void AD9833_Init(void);
 
 //En Hz
-void AD9833_SetFrequency(uint32_t);
+float AD9833_SetFrequency(float);
 void AD9833_SetEnabled(uint8_t);
 
 #endif /* INC_AD9833_H_ */

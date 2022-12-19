@@ -119,7 +119,7 @@
                             printf("\n");
 #else
 #define USBD_UsrLog(...)
-#endif /* (USBD_DEBUG_LEVEL > 0U) */
+#endif
 
 #if (USBD_DEBUG_LEVEL > 1)
 
@@ -128,7 +128,7 @@
                             printf("\n");
 #else
 #define USBD_ErrLog(...)
-#endif /* (USBD_DEBUG_LEVEL > 1U) */
+#endif
 
 #if (USBD_DEBUG_LEVEL > 2)
 #define USBD_DbgLog(...)    printf("DEBUG : ") ;\
@@ -136,7 +136,7 @@
                             printf("\n");
 #else
 #define USBD_DbgLog(...)
-#endif /* (USBD_DEBUG_LEVEL > 2U) */
+#endif
 
 /**
   * @}
@@ -178,3 +178,4 @@ void USBD_static_free(void *p);
 
 #endif /* __USBD_CONF__H__ */
 
+/************************ (C) COPYRIGHT STMicroelectronics *****END OF FILE****/

@@ -20,7 +20,7 @@
 #include "main.h"
 #include "cmsis_os.h"
 #include "app_touchgfx.h"
-//#include "usb_device.h"
+#include "usb_device.h"
 
 /* Private includes ----------------------------------------------------------*/
 /* USER CODE BEGIN Includes */
@@ -29,7 +29,7 @@
 #include "Touch.h"
 #include <math.h>
 
-//#include "usbd_customhid.h"
+#include "usbd_customhid.h"
 
 #include "stdlib.h"
 /* USER CODE END Includes */
@@ -1885,7 +1885,7 @@ uint16_t IC_out;
 uint8_t medicion_realizada;
 
 //Variable global para handler de usb
-//extern USBD_HandleTypeDef hUsbDeviceFS;
+extern USBD_HandleTypeDef hUsbDeviceFS;
 
 //FreeRTOS
 SemaphoreHandle_t sem_measure;
@@ -1926,7 +1926,7 @@ void MeasureTask(void *pvParameters);
 void ModuleTask(void *pvParameters);
 void PhaseTask(void *pvParameters);
 
-//void USBTask(void *pvParameters);
+void USBTask(void *pvParameters);
 /* USER CODE END PFP */
 
 /* Private user code ---------------------------------------------------------*/
@@ -2035,7 +2035,7 @@ int main(void)
   xTaskCreate(MeasureTask, "Measure", configMINIMAL_STACK_SIZE, NULL, tskIDLE_PRIORITY+1, NULL);
   xTaskCreate(ModuleTask, "Module", configMINIMAL_STACK_SIZE, NULL, tskIDLE_PRIORITY+1, NULL);
   xTaskCreate(PhaseTask, "Phase", configMINIMAL_STACK_SIZE, NULL, tskIDLE_PRIORITY+1, NULL);
-//  xTaskCreate(USBTask, "USB", configMINIMAL_STACK_SIZE, NULL, tskIDLE_PRIORITY+1, NULL);
+  xTaskCreate(USBTask, "USB", configMINIMAL_STACK_SIZE, NULL, tskIDLE_PRIORITY+1, NULL);
   /* USER CODE END RTOS_THREADS */
 
   /* USER CODE BEGIN WHILE */
@@ -2468,7 +2468,7 @@ extern void touchgfxSignalVSync(void);
 void StartHardwareTask(void* pvParameters)
 {
 	/* init code for USB_DEVICE */
-//	MX_USB_DEVICE_Init();
+	MX_USB_DEVICE_Init();
 	/* USER CODE BEGIN 5 */
 	HAL_TIM_Base_Start_IT(&htim2);
 	MX_TouchGFX_Process();
@@ -2498,7 +2498,8 @@ void MeasureTask(void* pvParameters)
 			HAL_GPIO_WritePin(RST_VOUT_GPIO_Port, RST_VOUT_Pin, GPIO_PIN_SET);
 
 			//Cambio de frecuencia (frecuencia redondeada a entero por el momento)
-			AD9833_SetFrequency(ROUND_TO_INT(freq[i]));
+			//Reescribo freq con el valor que verdaderamente se genera
+			freq[i] = AD9833_SetFrequency(freq[i]);
 
 			vTaskDelay(pdMS_TO_TICKS(1));
 			//Desactivo mosfets
@@ -2508,7 +2509,7 @@ void MeasureTask(void* pvParameters)
 			if(freq[i]<10)
 				vTaskDelay(pdMS_TO_TICKS(1000));
 			else
-				vTaskDelay(pdMS_TO_TICKS(100));
+				vTaskDelay(pdMS_TO_TICKS(500));
 
 			//libero tarea de MEDICION DE MAGNITUD:
 			xSemaphoreGive(sem_mod);
@@ -2517,7 +2518,7 @@ void MeasureTask(void* pvParameters)
 			xQueueReceive(queue_mod, &mag[i], portMAX_DELAY);
 
 			//libero tarea de MEDICION DE FASE:
-			if(mag[i]>-40)
+			if(mag[i]>-30 && freq[i] < 20000)
 			{
 				xQueueSend(queue_freq_phase, &i, portMAX_DELAY);
 				xQueueReceive(queue_phase, &phase[i], portMAX_DELAY);
@@ -2535,7 +2536,7 @@ void MeasureTask(void* pvParameters)
 
 		data_ready = 1;
 
-//		xSemaphoreGive(sem_USB);	//Transmito por USB los datos medidos
+		xSemaphoreGive(sem_USB);	//Transmito por USB los datos medidos
 	}
 }
 
@@ -2714,28 +2715,28 @@ void PhaseTask(void *pvParameters)
 	}
 }
 
-//void USBTask(void *pvParameters)
-//{
-//
-//	while(1)
-//	{
-//		xSemaphoreTake(sem_USB, portMAX_DELAY);
-//
-//		USBD_CUSTOM_HID_SendReport(&hUsbDeviceFS,(uint8_t*)&total_points,sizeof(total_points));
-//
-//		vTaskDelay(pdMS_TO_TICKS(100));//Delay para evitar pérdida de paquetes
-//
-//		USBD_CUSTOM_HID_SendReport(&hUsbDeviceFS,(uint8_t*)freq,total_points*4);
-//
-//		vTaskDelay(pdMS_TO_TICKS(100));
-//
-//		USBD_CUSTOM_HID_SendReport(&hUsbDeviceFS,(uint8_t*)mag,total_points*4);
-//
-//		vTaskDelay(pdMS_TO_TICKS(100));
-//
-//		USBD_CUSTOM_HID_SendReport(&hUsbDeviceFS,(uint8_t*)phase,total_points*4);
-//	}
-//}
+void USBTask(void *pvParameters)
+{
+
+	while(1)
+	{
+		xSemaphoreTake(sem_USB, portMAX_DELAY);
+
+		USBD_CUSTOM_HID_SendReport(&hUsbDeviceFS,(uint8_t*)&total_points,sizeof(total_points));
+
+		vTaskDelay(pdMS_TO_TICKS(100));//Delay para evitar pérdida de paquetes
+
+		USBD_CUSTOM_HID_SendReport(&hUsbDeviceFS,(uint8_t*)freq,total_points*4);
+
+		vTaskDelay(pdMS_TO_TICKS(100));
+
+		USBD_CUSTOM_HID_SendReport(&hUsbDeviceFS,(uint8_t*)mag,total_points*4);
+
+		vTaskDelay(pdMS_TO_TICKS(100));
+
+		USBD_CUSTOM_HID_SendReport(&hUsbDeviceFS,(uint8_t*)phase,total_points*4);
+	}
+}
 /* USER CODE END 4 */
 
 /**
