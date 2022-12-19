@@ -63,9 +63,9 @@
   * @{
   */
 
-#define USBD_VID     10
+#define USBD_VID     1155
 #define USBD_LANGID_STRING     1033
-#define USBD_MANUFACTURER_STRING     "PINE ALE"
+#define USBD_MANUFACTURER_STRING     "STMicroelectronics"
 #define USBD_PID_FS     22352
 #define USBD_PRODUCT_STRING_FS     "Bode Analyzer 1.0"
 #define USBD_CONFIGURATION_STRING_FS     "Custom HID Config"
@@ -218,7 +218,7 @@ __ALIGN_BEGIN uint8_t USBD_FS_BOSDesc[USB_SIZ_BOS_DESC] __ALIGN_END =
   #pragma data_alignment=4
 #endif /* defined ( __ICCARM__ ) */
 
-/** USB lang indentifier descriptor. */
+/** USB lang identifier descriptor. */
 __ALIGN_BEGIN uint8_t USBD_LangIDDesc[USB_LEN_LANGID_STR_DESC] __ALIGN_END =
 {
      USB_LEN_LANGID_STR_DESC,
@@ -442,4 +442,3 @@ static void IntToUnicode(uint32_t value, uint8_t * pbuf, uint8_t len)
   * @}
   */
 
-/************************ (C) COPYRIGHT STMicroelectronics *****END OF FILE****/

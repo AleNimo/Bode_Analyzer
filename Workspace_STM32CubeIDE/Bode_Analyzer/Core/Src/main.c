@@ -20,7 +20,7 @@
 #include "main.h"
 #include "cmsis_os.h"
 #include "app_touchgfx.h"
-#include "usb_device.h"
+//#include "usb_device.h"
 
 /* Private includes ----------------------------------------------------------*/
 /* USER CODE BEGIN Includes */
@@ -29,7 +29,7 @@
 #include "Touch.h"
 #include <math.h>
 
-#include "usbd_customhid.h"
+//#include "usbd_customhid.h"
 
 #include "stdlib.h"
 /* USER CODE END Includes */
@@ -50,6 +50,7 @@
 
 /* Private variables ---------------------------------------------------------*/
 ADC_HandleTypeDef hadc1;
+DMA_HandleTypeDef hdma_adc1;
 
 CRC_HandleTypeDef hcrc;
 
@@ -1876,7 +1877,7 @@ unsigned char data_ready = 0;
 unsigned int total_points = 0;
 
 //Vector DMA para ADC
-//uint32_t ADC_buffer_DMA[MOD_SAMPLES];
+uint32_t ADC_buffer_DMA[MOD_SAMPLES];	//Solo una muestra de entrada y salida
 
 //Variables globales para medicion con IC
 uint16_t IC_in;
@@ -1884,7 +1885,7 @@ uint16_t IC_out;
 uint8_t medicion_realizada;
 
 //Variable global para handler de usb
-extern USBD_HandleTypeDef hUsbDeviceFS;
+//extern USBD_HandleTypeDef hUsbDeviceFS;
 
 //FreeRTOS
 SemaphoreHandle_t sem_measure;
@@ -1908,6 +1909,7 @@ QueueHandle_t queue_IC;
 /* Private function prototypes -----------------------------------------------*/
 void SystemClock_Config(void);
 static void MX_GPIO_Init(void);
+static void MX_DMA_Init(void);
 static void MX_ADC1_Init(void);
 static void MX_SPI2_Init(void);
 static void MX_CRC_Init(void);
@@ -1916,7 +1918,7 @@ static void MX_TIM2_Init(void);
 
 /* USER CODE BEGIN PFP */
 void SPI_ChangeParameters(SPI_HandleTypeDef* hspi, uint32_t dataSize, uint32_t clkPolarity);
-void TIM_ConfigMode(uint8_t state);
+void TIM_ConfigPrescaler(uint32_t prescaler);
 
 void StartHardwareTask(void *pvParameters);
 
@@ -1924,7 +1926,7 @@ void MeasureTask(void *pvParameters);
 void ModuleTask(void *pvParameters);
 void PhaseTask(void *pvParameters);
 
-void USBTask(void *pvParameters);
+//void USBTask(void *pvParameters);
 /* USER CODE END PFP */
 
 /* Private user code ---------------------------------------------------------*/
@@ -1960,6 +1962,7 @@ int main(void)
 
   /* Initialize all configured peripherals */
   MX_GPIO_Init();
+  MX_DMA_Init();
   MX_ADC1_Init();
   MX_SPI2_Init();
   MX_CRC_Init();
@@ -1976,7 +1979,7 @@ int main(void)
 
   AD9833_SetEnabled(TRUE);
 
-  HAL_Delay(10000);
+  HAL_Delay(5000);
 
   //Reconfiguro polaridad de clock a la que necesita el touch
   SPI_ChangeParameters(&hspi2, SPI_DATASIZE_8BIT, SPI_POLARITY_LOW);
@@ -2032,13 +2035,9 @@ int main(void)
   xTaskCreate(MeasureTask, "Measure", configMINIMAL_STACK_SIZE, NULL, tskIDLE_PRIORITY+1, NULL);
   xTaskCreate(ModuleTask, "Module", configMINIMAL_STACK_SIZE, NULL, tskIDLE_PRIORITY+1, NULL);
   xTaskCreate(PhaseTask, "Phase", configMINIMAL_STACK_SIZE, NULL, tskIDLE_PRIORITY+1, NULL);
-  xTaskCreate(USBTask, "USB", configMINIMAL_STACK_SIZE, NULL, tskIDLE_PRIORITY+1, NULL);
+//  xTaskCreate(USBTask, "USB", configMINIMAL_STACK_SIZE, NULL, tskIDLE_PRIORITY+1, NULL);
   /* USER CODE END RTOS_THREADS */
 
-  /* Start scheduler */
-
-  /* We should never get here as control is now taken by the scheduler */
-  /* Infinite loop */
   /* USER CODE BEGIN WHILE */
 
   vTaskStartScheduler();
@@ -2108,6 +2107,8 @@ static void MX_ADC1_Init(void)
 
   /* USER CODE END ADC1_Init 0 */
 
+  ADC_ChannelConfTypeDef sConfig = {0};
+
   /* USER CODE BEGIN ADC1_Init 1 */
 
   /* USER CODE END ADC1_Init 1 */
@@ -2115,16 +2116,16 @@ static void MX_ADC1_Init(void)
   /** Configure the global features of the ADC (Clock, Resolution, Data Alignment and number of conversion)
   */
   hadc1.Instance = ADC1;
-  hadc1.Init.ClockPrescaler = ADC_CLOCK_SYNC_PCLK_DIV2;
+  hadc1.Init.ClockPrescaler = ADC_CLOCK_SYNC_PCLK_DIV4;
   hadc1.Init.Resolution = ADC_RESOLUTION_12B;
   hadc1.Init.ScanConvMode = ENABLE;
-  hadc1.Init.ContinuousConvMode = DISABLE;
+  hadc1.Init.ContinuousConvMode = ENABLE;
   hadc1.Init.DiscontinuousConvMode = DISABLE;
   hadc1.Init.ExternalTrigConvEdge = ADC_EXTERNALTRIGCONVEDGE_NONE;
   hadc1.Init.ExternalTrigConv = ADC_SOFTWARE_START;
   hadc1.Init.DataAlign = ADC_DATAALIGN_RIGHT;
-  hadc1.Init.NbrOfConversion = 1;
-  hadc1.Init.DMAContinuousRequests = DISABLE;
+  hadc1.Init.NbrOfConversion = 2;
+  hadc1.Init.DMAContinuousRequests = ENABLE;
   hadc1.Init.EOCSelection = ADC_EOC_SEQ_CONV;
   if (HAL_ADC_Init(&hadc1) != HAL_OK)
   {
@@ -2133,22 +2134,22 @@ static void MX_ADC1_Init(void)
 
   /** Configure for the selected ADC regular channel its corresponding rank in the sequencer and its sample time.
   */
-//  sConfig.Channel = ADC_CHANNEL_2;
-//  sConfig.Rank = 1;
-//  sConfig.SamplingTime = ADC_SAMPLETIME_56CYCLES;
-//  if (HAL_ADC_ConfigChannel(&hadc1, &sConfig) != HAL_OK)
-//  {
-//    Error_Handler();
-//  }
-//
-//  /** Configure for the selected ADC regular channel its corresponding rank in the sequencer and its sample time.
-//  */
-//  sConfig.Channel = ADC_CHANNEL_3;
-//  sConfig.Rank = 2;
-//  if (HAL_ADC_ConfigChannel(&hadc1, &sConfig) != HAL_OK)
-//  {
-//    Error_Handler();
-//  }
+  sConfig.Channel = ADC_CHANNEL_2;
+  sConfig.Rank = 1;
+  sConfig.SamplingTime = ADC_SAMPLETIME_480CYCLES;
+  if (HAL_ADC_ConfigChannel(&hadc1, &sConfig) != HAL_OK)
+  {
+    Error_Handler();
+  }
+
+  /** Configure for the selected ADC regular channel its corresponding rank in the sequencer and its sample time.
+  */
+  sConfig.Channel = ADC_CHANNEL_3;
+  sConfig.Rank = 2;
+  if (HAL_ADC_ConfigChannel(&hadc1, &sConfig) != HAL_OK)
+  {
+    Error_Handler();
+  }
   /* USER CODE BEGIN ADC1_Init 2 */
 
   /* USER CODE END ADC1_Init 2 */
@@ -2328,6 +2329,22 @@ static void MX_TIM2_Init(void)
 }
 
 /**
+  * Enable DMA controller clock
+  */
+static void MX_DMA_Init(void)
+{
+
+  /* DMA controller clock enable */
+  __HAL_RCC_DMA2_CLK_ENABLE();
+
+  /* DMA interrupt init */
+  /* DMA2_Stream0_IRQn interrupt configuration */
+  HAL_NVIC_SetPriority(DMA2_Stream0_IRQn, 5, 0);
+  HAL_NVIC_EnableIRQ(DMA2_Stream0_IRQn);
+
+}
+
+/**
   * @brief GPIO Initialization Function
   * @param None
   * @retval None
@@ -2349,23 +2366,17 @@ static void MX_GPIO_Init(void)
                           |DB12_Pin, GPIO_PIN_RESET);
 
   /*Configure GPIO pin Output Level */
-  HAL_GPIO_WritePin(GPIOA, LCD_RESET_Pin|LCD_WR_Pin|LD2_Pin|LCD_RD_Pin
-                          |LCD_RS_Pin, GPIO_PIN_RESET);
+  HAL_GPIO_WritePin(GPIOA, LCD_RESET_Pin|LCD_WR_Pin|LCD_RD_Pin|LCD_RS_Pin, GPIO_PIN_RESET);
 
   /*Configure GPIO pin Output Level */
-  HAL_GPIO_WritePin(GPIOB, DB13_Pin|DB14_Pin|DB15_Pin, GPIO_PIN_RESET);
+  HAL_GPIO_WritePin(GPIOB, DB13_Pin|DB14_Pin|DB15_Pin|RST_VIN_Pin
+                          |RST_VOUT_Pin, GPIO_PIN_RESET);
 
   /*Configure GPIO pin Output Level */
-  HAL_GPIO_WritePin(GPIOB, LCD_CS_Pin|TOUCH_CS_Pin|RST_VIN_Pin|RST_VOUT_Pin, GPIO_PIN_SET);
+  HAL_GPIO_WritePin(GPIOB, LCD_CS_Pin|TOUCH_CS_Pin, GPIO_PIN_SET);
 
   /*Configure GPIO pin Output Level */
   HAL_GPIO_WritePin(DDS_CS_GPIO_Port, DDS_CS_Pin, GPIO_PIN_SET);
-
-  /*Configure GPIO pin : B1_Pin */
-  GPIO_InitStruct.Pin = B1_Pin;
-  GPIO_InitStruct.Mode = GPIO_MODE_IT_FALLING;
-  GPIO_InitStruct.Pull = GPIO_NOPULL;
-  HAL_GPIO_Init(B1_GPIO_Port, &GPIO_InitStruct);
 
   /*Configure GPIO pins : DB0_Pin DB1_Pin DB2_Pin DB3_Pin
                            DB4_Pin DB5_Pin DB6_Pin DB7_Pin
@@ -2380,10 +2391,10 @@ static void MX_GPIO_Init(void)
   GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_LOW;
   HAL_GPIO_Init(GPIOC, &GPIO_InitStruct);
 
-  /*Configure GPIO pins : LCD_RESET_Pin LCD_WR_Pin LD2_Pin LCD_RD_Pin
-                           LCD_RS_Pin DDS_CS_Pin */
-  GPIO_InitStruct.Pin = LCD_RESET_Pin|LCD_WR_Pin|LD2_Pin|LCD_RD_Pin
-                          |LCD_RS_Pin|DDS_CS_Pin;
+  /*Configure GPIO pins : LCD_RESET_Pin LCD_WR_Pin LCD_RD_Pin LCD_RS_Pin
+                           DDS_CS_Pin */
+  GPIO_InitStruct.Pin = LCD_RESET_Pin|LCD_WR_Pin|LCD_RD_Pin|LCD_RS_Pin
+                          |DDS_CS_Pin;
   GPIO_InitStruct.Mode = GPIO_MODE_OUTPUT_PP;
   GPIO_InitStruct.Pull = GPIO_NOPULL;
   GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_LOW;
@@ -2423,56 +2434,41 @@ void SPI_ChangeParameters(SPI_HandleTypeDef* hspi, uint32_t dataSize, uint32_t c
 	__HAL_SPI_ENABLE(hspi);
 }
 
-//void TIM_ConfigMode(uint8_t state)
+void TIM_ConfigPrescaler(uint32_t prescaler)
+{
+	htim1.Init.Prescaler = prescaler;
+	if (HAL_TIM_Base_Init(&htim1) != HAL_OK)
+	{
+		Error_Handler();
+	}
+
+	TIM1->EGR = TIM_EGR_UG; //Genero un evento para cambiar el prescaler inmediatamente (sino se cambia al hacer overflow)
+}
+
+//void ADC_SelectChannel(uint32_t channel)
 //{
-//	TIM_IC_InitTypeDef sConfigIC = {0};
+//	ADC_ChannelConfTypeDef sConfig = {0};
 //
-//	sConfigIC.ICPolarity = TIM_INPUTCHANNELPOLARITY_RISING;
-//	sConfigIC.ICSelection = TIM_ICSELECTION_DIRECTTI;
-//	sConfigIC.ICPrescaler = TIM_ICPSC_DIV1;
+//	if(channel == ADC_CHANNEL_2)
+//		sConfig.Channel = ADC_CHANNEL_2;
 //
-//	if(state == LOW_FREQ)
-//		sConfigIC.ICFilter = 15;
+//	else if(channel == ADC_CHANNEL_3)
+//		sConfig.Channel = ADC_CHANNEL_3;
 //
-//	else
-//		sConfigIC.ICFilter = 0;
-//
-//
-//	if (HAL_TIM_IC_ConfigChannel(&htim1, &sConfigIC, TIM_CHANNEL_2) != HAL_OK)
+//	sConfig.Rank = 1;
+//	sConfig.SamplingTime = ADC_SAMPLETIME_56CYCLES;
+//	if (HAL_ADC_ConfigChannel(&hadc1, &sConfig) != HAL_OK)
 //	{
-//		Error_Handler();
-//	}
-//
-//	if (HAL_TIM_IC_ConfigChannel(&htim1, &sConfigIC, TIM_CHANNEL_3) != HAL_OK)
-//	{
-//		Error_Handler();
+//	Error_Handler();
 //	}
 //}
-
-void ADC_SelectChannel(uint32_t channel)
-{
-	ADC_ChannelConfTypeDef sConfig = {0};
-
-	if(channel == ADC_CHANNEL_2)
-		sConfig.Channel = ADC_CHANNEL_2;
-
-	else if(channel == ADC_CHANNEL_3)
-		sConfig.Channel = ADC_CHANNEL_3;
-
-	sConfig.Rank = 1;
-	sConfig.SamplingTime = ADC_SAMPLETIME_56CYCLES;
-	if (HAL_ADC_ConfigChannel(&hadc1, &sConfig) != HAL_OK)
-	{
-	Error_Handler();
-	}
-}
 
 extern void touchgfxSignalVSync(void);
 
 void StartHardwareTask(void* pvParameters)
 {
 	/* init code for USB_DEVICE */
-	MX_USB_DEVICE_Init();
+//	MX_USB_DEVICE_Init();
 	/* USER CODE BEGIN 5 */
 	HAL_TIM_Base_Start_IT(&htim2);
 	MX_TouchGFX_Process();
@@ -2517,15 +2513,17 @@ void MeasureTask(void* pvParameters)
 			//libero tarea de MEDICION DE MAGNITUD:
 			xSemaphoreGive(sem_mod);
 
-			//libero tarea de MEDICION DE FASE:
-			if(mag[i-1]>-15)
-				xQueueSend(queue_freq_phase, &i, portMAX_DELAY);
-
-			//Me quedo esperando los resultados de cada tarea
+			//Espero medicion de magnitud
 			xQueueReceive(queue_mod, &mag[i], portMAX_DELAY);
 
-			if(mag[i-1]>-15)
+			//libero tarea de MEDICION DE FASE:
+			if(mag[i]>-40)
+			{
+				xQueueSend(queue_freq_phase, &i, portMAX_DELAY);
 				xQueueReceive(queue_phase, &phase[i], portMAX_DELAY);
+			}
+			else if (i==0)
+				phase[i] = 0;
 			else
 				phase[i] = phase[i-1];
 
@@ -2537,30 +2535,33 @@ void MeasureTask(void* pvParameters)
 
 		data_ready = 1;
 
-		xSemaphoreGive(sem_USB);	//Transmito por USB los datos medidos
+//		xSemaphoreGive(sem_USB);	//Transmito por USB los datos medidos
 	}
 }
 
-//void HAL_ADC_ConvCpltCallback(ADC_HandleTypeDef* hadc)
-//{
-//	BaseType_t xHigherPriorityTaskWoken = pdFALSE;
-//
-//	HAL_ADC_Stop_DMA(&hadc1);
-//
-//	xSemaphoreGiveFromISR(sem_ADC, &xHigherPriorityTaskWoken );
-//
-//	portYIELD_FROM_ISR( xHigherPriorityTaskWoken );
-//}
+
+void HAL_ADC_ConvCpltCallback(ADC_HandleTypeDef* hadc)
+{
+	static uint8_t mediciones = 0;
+
+	BaseType_t xHigherPriorityTaskWoken = pdFALSE;
+
+	mediciones++;
+
+	if(mediciones == 10)
+	{
+		HAL_ADC_Stop_DMA(&hadc1);
+
+		mediciones = 0;
+
+		xSemaphoreGiveFromISR(sem_ADC, &xHigherPriorityTaskWoken );
+
+		portYIELD_FROM_ISR( xHigherPriorityTaskWoken );
+	}
+}
 
 void ModuleTask(void *pvParameters)
 {
-	uint8_t medicion = 0;
-
-	uint16_t ADC_buffer_in[MOD_SAMPLES];
-
-	uint16_t ADC_buffer_out[MOD_SAMPLES];
-
-
 	float cuentas_in = 0;
 	float cuentas_out = 0;
 
@@ -2570,28 +2571,11 @@ void ModuleTask(void *pvParameters)
 	{
 		xSemaphoreTake(sem_mod, portMAX_DELAY);
 
-		//Realizo MOD_SAMPLES mediciones de entrada y MOD_SAMPLES de salida separadas 1ms cada una
+		//Realizo MOD_SAMPLES mediciones: mitad de entrada y mitad de salida separadas 54.67us entre sí
 
-		while(medicion < MOD_SAMPLES)
-		{
-			ADC_SelectChannel(ADC_CHANNEL_2);
-			HAL_ADC_Start(&hadc1);
-			HAL_ADC_PollForConversion(&hadc1, HAL_MAX_DELAY);
-			ADC_buffer_in[medicion] = HAL_ADC_GetValue(&hadc1);
-			HAL_ADC_Stop(&hadc1);
+		HAL_ADC_Start_DMA(&hadc1, ADC_buffer_DMA, MOD_SAMPLES);
 
-			ADC_SelectChannel(ADC_CHANNEL_3);
-			HAL_ADC_Start(&hadc1);
-			HAL_ADC_PollForConversion(&hadc1, HAL_MAX_DELAY);
-			ADC_buffer_out[medicion] = HAL_ADC_GetValue(&hadc1);
-			HAL_ADC_Stop(&hadc1);
-
-			vTaskDelay(pdMS_TO_TICKS(1));	//Tiempo entre muestras
-
-			medicion++;
-		}
-
-		medicion = 0;
+		xSemaphoreTake(sem_ADC, portMAX_DELAY);
 
 		//Promedio de MOD_SAMPLES
 		cuentas_in	= 0;
@@ -2599,8 +2583,8 @@ void ModuleTask(void *pvParameters)
 
 		for(uint8_t j=0; j<MOD_SAMPLES; j+=2)
 		{
-			cuentas_in += ADC_buffer_in[j];
-			cuentas_out += ADC_buffer_out[j+1];
+			cuentas_in += ADC_buffer_DMA[j];
+			cuentas_out += ADC_buffer_DMA[j+1];
 		}
 
 		//v_in /= (float)MOD_SAMPLES;	//No es necesario si no hay transferencia calibrada
@@ -2624,17 +2608,19 @@ void HAL_TIM_IC_CaptureCallback(TIM_HandleTypeDef *htim)
 	{
 		if(first_capture == 0 && medicion_realizada == 0)	//Primer flanco ascendente
 		{
-			IC_in = HAL_TIM_ReadCapturedValue(htim, TIM_CHANNEL_2);
+			HAL_TIM_IC_Stop_IT(&htim1, TIM_CHANNEL_2);
+			IC_in = htim->Instance->CCR2;
 			first_capture = 1;
+
 		}
 	}
 	if(htim->Channel == HAL_TIM_ACTIVE_CHANNEL_3)
 	{
 		if(first_capture)	//Si ya se capturó el primer flanco en el canal 2
 		{
-			IC_out = HAL_TIM_ReadCapturedValue(htim, TIM_CHANNEL_3);
-
+			HAL_TIM_IC_Stop_IT(&htim1, TIM_CHANNEL_3);
 			medicion_realizada = 1;
+			IC_out = htim->Instance->CCR3;
 			first_capture = 0;
 		}
 	}
@@ -2645,87 +2631,111 @@ void PhaseTask(void *pvParameters)
 	float time_diff;
 
 	uint16_t index;
+	float phase_met1;
 	float phase_val;
-	float auxPhase_val;
-
-	uint8_t firstDiscontinuity = 1;
 
 	while(1)
 	{
 		phase_val = 0;
 		xQueueReceive(queue_freq_phase, &index, portMAX_DELAY);
 
+		//Calculo prescaler para que las cuentas del timer alcancen un período completo
+		if(freq[index] < 15.259)
+		{
+			TIM_ConfigPrescaler(ceil((long double)FREQ_TIM1/(65535*freq[index]) - 1));
+			vTaskDelay(pdMS_TO_TICKS(1));
+		}
+		else if(htim1.Init.Prescaler != 71)	//Prescaler mínimo de 71 para que el timer funcione correctamente
+		{
+			TIM_ConfigPrescaler(71);
+			vTaskDelay(pdMS_TO_TICKS(1));
+		}
+
 		HAL_TIM_IC_Start_IT(&htim1, TIM_CHANNEL_2);
 		HAL_TIM_IC_Start_IT(&htim1, TIM_CHANNEL_3);
+
+		medicion_realizada = 0;	//Fuerzo a que vuelva a medir
 
 		for(uint8_t i = 0; i<PHASE_SAMPLES; i++)
 		{
 			while(medicion_realizada == 0);
 
-
-			if (IC_out > IC_in)
+			if (IC_out >= IC_in)
 				time_diff = (float)(IC_out - IC_in) * htim1.Init.Prescaler / FREQ_TIM1;
 
 			else if (IC_in > IC_out) //Entre IC_in e IC_out se llenó el registro de la cuenta
 				time_diff = (float)((65535 - IC_in) + IC_out) * htim1.Init.Prescaler / FREQ_TIM1;
 
-			medicion_realizada = 0;
+			//El metodo de medicion siempre es FaseOut - FaseIn (Método 1), luego
+			//matematicamente lo pasamos a FaseIn - FaseOut (Método 2) de ser necesario:
 
-			auxPhase_val = -2*180*freq[index]*time_diff;	//fase en grados sexagecimales
+			phase_met1 = -2*180*freq[index]*time_diff;	//fase en grados sexagecimales (Metodo 1)
 
-			if((auxPhase_val - phase[index-1]) > 150 && firstDiscontinuity)	//Se detecta una discontinuidad en la que la fase debe subir (Ejemplo Notch)
+			if(abs(phase_met1) > 360) //Detecto si hay ruido de comparador (no puede haber desfasaje mayor a 360)
 			{
-				phase_val += auxPhase_val + 360;
-				firstDiscontinuity = 0;
+				i--;
+				HAL_TIM_IC_Start_IT(&htim1, TIM_CHANNEL_2);
+				HAL_TIM_IC_Start_IT(&htim1, TIM_CHANNEL_3);
 			}
-
-			else if((phase[index-1] - auxPhase_val) > 150 && firstDiscontinuity)	//Se detecta una discontinuidad en la que la fase debe bajar
-			{
-				phase_val += auxPhase_val - 360;
-				firstDiscontinuity = 0;
-			}
-
-			else if(abs(auxPhase_val) <= (float)360)	//Detecto si el filtro digital no pudo filtrar ruido de comparador
-				phase_val += auxPhase_val;
+			else if(phase_met1 < -180)	//Hay que pasar al metodo 2
+				phase_val += phase_met1 + 360;
 
 			else
-				i--;
+				phase_val+=phase_met1; //Sigo con metodo 1
+
+
+//			else if((phase[index-1] - auxPhase_val) > 150 && discontinuity == 0)	//Se detecta una discontinuidad en la que la fase debe subir (Ejemplo Notch)
+//			{
+//				phase_val += auxPhase_val + 360;
+//				discontinuity = 1;
+//			}
+//
+//			else if((auxPhase_val - phase[index-1]) > 150 && discontinuity == 0)	//Se detecta una discontinuidad en la que la fase debe bajar
+//			{
+//				phase_val += auxPhase_val - 360;
+//				discontinuity = -1;
+//			}
+//
+//			else
+//				phase_val += auxPhase_val + discontinuity*360;
+
+			medicion_realizada = 0;
 
 		}
 		phase_val /= (float)PHASE_SAMPLES;
 
-		HAL_TIM_IC_Stop_IT(&htim1, TIM_CHANNEL_2);
-		HAL_TIM_IC_Stop_IT(&htim1, TIM_CHANNEL_3);
+//		HAL_TIM_IC_Stop_IT(&htim1, TIM_CHANNEL_2);
+//		HAL_TIM_IC_Stop_IT(&htim1, TIM_CHANNEL_3);
 
 		xQueueSend(queue_phase, &phase_val, portMAX_DELAY);
 
-		if(index==total_points-1)
-			firstDiscontinuity = 1;
+//		if(index==total_points-1)
+//			discontinuity = 0;
 	}
 }
 
-void USBTask(void *pvParameters)
-{
-
-	while(1)
-	{
-		xSemaphoreTake(sem_USB, portMAX_DELAY);
-
-		USBD_CUSTOM_HID_SendReport(&hUsbDeviceFS,(uint8_t*)&total_points,sizeof(total_points));
-
-		vTaskDelay(pdMS_TO_TICKS(100));//Delay para evitar pérdida de paquetes
-
-		USBD_CUSTOM_HID_SendReport(&hUsbDeviceFS,(uint8_t*)freq,total_points*4);
-
-		vTaskDelay(pdMS_TO_TICKS(100));
-
-		USBD_CUSTOM_HID_SendReport(&hUsbDeviceFS,(uint8_t*)mag,total_points*4);
-
-		vTaskDelay(pdMS_TO_TICKS(100));
-
-		USBD_CUSTOM_HID_SendReport(&hUsbDeviceFS,(uint8_t*)phase,total_points*4);
-	}
-}
+//void USBTask(void *pvParameters)
+//{
+//
+//	while(1)
+//	{
+//		xSemaphoreTake(sem_USB, portMAX_DELAY);
+//
+//		USBD_CUSTOM_HID_SendReport(&hUsbDeviceFS,(uint8_t*)&total_points,sizeof(total_points));
+//
+//		vTaskDelay(pdMS_TO_TICKS(100));//Delay para evitar pérdida de paquetes
+//
+//		USBD_CUSTOM_HID_SendReport(&hUsbDeviceFS,(uint8_t*)freq,total_points*4);
+//
+//		vTaskDelay(pdMS_TO_TICKS(100));
+//
+//		USBD_CUSTOM_HID_SendReport(&hUsbDeviceFS,(uint8_t*)mag,total_points*4);
+//
+//		vTaskDelay(pdMS_TO_TICKS(100));
+//
+//		USBD_CUSTOM_HID_SendReport(&hUsbDeviceFS,(uint8_t*)phase,total_points*4);
+//	}
+//}
 /* USER CODE END 4 */
 
 /**

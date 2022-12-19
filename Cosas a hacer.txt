@@ -1,0 +1,8 @@
+Calibraciones:
+-Ensayar error de detector de pico a distintas frecuencias y tener esos datos.
+-Ensayar transferencia de ADC de NUCLEO-F401RE.
+
+Mejoras:
+-Generar frecuencias con decimales
+-Actualizar rectangulos chicos de la pantalla (para render más rapido)
+-Mejorar medicion de fase (detectar discontinuidades)

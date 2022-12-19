@@ -47,7 +47,7 @@ extern "C" {
 #define HIGH_FREQ 1
 
 
-#define MOD_SAMPLES 10	//SAMPLES de entrada / SAMPLES de salida tomadas con el ADC
+#define MOD_SAMPLES 20	//SAMPLES de entrada / SAMPLES de salida tomadas con el ADC
 #define PHASE_SAMPLES 1
 
 #define MAX_FREQ_POINTS 600
@@ -70,8 +70,6 @@ void Error_Handler(void);
 /* USER CODE END EFP */
 
 /* Private defines -----------------------------------------------------------*/
-#define B1_Pin GPIO_PIN_13
-#define B1_GPIO_Port GPIOC
 #define DB0_Pin GPIO_PIN_0
 #define DB0_GPIO_Port GPIOC
 #define DB1_Pin GPIO_PIN_1
@@ -88,8 +86,6 @@ void Error_Handler(void);
 #define ADC_VOUT_GPIO_Port GPIOA
 #define LCD_WR_Pin GPIO_PIN_4
 #define LCD_WR_GPIO_Port GPIOA
-#define LD2_Pin GPIO_PIN_5
-#define LD2_GPIO_Port GPIOA
 #define LCD_RD_Pin GPIO_PIN_6
 #define LCD_RD_GPIO_Port GPIOA
 #define LCD_RS_Pin GPIO_PIN_7

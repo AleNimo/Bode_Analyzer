@@ -1,8 +1,0 @@
--Actualizar rectangulos chicos de la pantalla
-
-
-
-
-
--Ensayar error de detector de pico a distintas frecuencias y tener esos datos.
--Ensayar transferencia de ADC de NUCLEO-F401RE.
