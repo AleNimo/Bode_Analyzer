@@ -1669,7 +1669,7 @@
             "Name": "textFase",
             "X": 120,
             "Y": 1,
-            "Width": 81,
+            "Width": 61,
             "Height": 24,
             "Visible": false,
             "TextId": "__SingleUse_2J35",

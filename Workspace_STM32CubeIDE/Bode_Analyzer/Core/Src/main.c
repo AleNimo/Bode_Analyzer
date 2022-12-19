@@ -30,6 +30,8 @@
 #include <math.h>
 
 #include "usbd_customhid.h"
+
+#include "stdlib.h"
 /* USER CODE END Includes */
 
 /* Private typedef -----------------------------------------------------------*/
@@ -2017,7 +2019,7 @@ int main(void)
   queue_mod = xQueueCreate(1, sizeof(float));
   queue_phase = xQueueCreate(1, sizeof(float));
 
-  queue_freq_phase = xQueueCreate(1, sizeof(float));
+  queue_freq_phase = xQueueCreate(1, sizeof(uint16_t));
   queue_IC = xQueueCreate(2, sizeof(uint16_t));
   /* USER CODE END RTOS_QUEUES */
 
@@ -2106,8 +2108,6 @@ static void MX_ADC1_Init(void)
 
   /* USER CODE END ADC1_Init 0 */
 
-  ADC_ChannelConfTypeDef sConfig = {0};
-
   /* USER CODE BEGIN ADC1_Init 1 */
 
   /* USER CODE END ADC1_Init 1 */
@@ -2123,7 +2123,7 @@ static void MX_ADC1_Init(void)
   hadc1.Init.ExternalTrigConvEdge = ADC_EXTERNALTRIGCONVEDGE_NONE;
   hadc1.Init.ExternalTrigConv = ADC_SOFTWARE_START;
   hadc1.Init.DataAlign = ADC_DATAALIGN_RIGHT;
-  hadc1.Init.NbrOfConversion = 2;
+  hadc1.Init.NbrOfConversion = 1;
   hadc1.Init.DMAContinuousRequests = DISABLE;
   hadc1.Init.EOCSelection = ADC_EOC_SEQ_CONV;
   if (HAL_ADC_Init(&hadc1) != HAL_OK)
@@ -2133,22 +2133,22 @@ static void MX_ADC1_Init(void)
 
   /** Configure for the selected ADC regular channel its corresponding rank in the sequencer and its sample time.
   */
-  sConfig.Channel = ADC_CHANNEL_2;
-  sConfig.Rank = 1;
-  sConfig.SamplingTime = ADC_SAMPLETIME_56CYCLES;
-  if (HAL_ADC_ConfigChannel(&hadc1, &sConfig) != HAL_OK)
-  {
-    Error_Handler();
-  }
-
-  /** Configure for the selected ADC regular channel its corresponding rank in the sequencer and its sample time.
-  */
-  sConfig.Channel = ADC_CHANNEL_3;
-  sConfig.Rank = 2;
-  if (HAL_ADC_ConfigChannel(&hadc1, &sConfig) != HAL_OK)
-  {
-    Error_Handler();
-  }
+//  sConfig.Channel = ADC_CHANNEL_2;
+//  sConfig.Rank = 1;
+//  sConfig.SamplingTime = ADC_SAMPLETIME_56CYCLES;
+//  if (HAL_ADC_ConfigChannel(&hadc1, &sConfig) != HAL_OK)
+//  {
+//    Error_Handler();
+//  }
+//
+//  /** Configure for the selected ADC regular channel its corresponding rank in the sequencer and its sample time.
+//  */
+//  sConfig.Channel = ADC_CHANNEL_3;
+//  sConfig.Rank = 2;
+//  if (HAL_ADC_ConfigChannel(&hadc1, &sConfig) != HAL_OK)
+//  {
+//    Error_Handler();
+//  }
   /* USER CODE BEGIN ADC1_Init 2 */
 
   /* USER CODE END ADC1_Init 2 */
@@ -2239,7 +2239,7 @@ static void MX_TIM1_Init(void)
 
   /* USER CODE END TIM1_Init 1 */
   htim1.Instance = TIM1;
-  htim1.Init.Prescaler = 83;
+  htim1.Init.Prescaler = 71;
   htim1.Init.CounterMode = TIM_COUNTERMODE_UP;
   htim1.Init.Period = 65535;
   htim1.Init.ClockDivision = TIM_CLOCKDIVISION_DIV1;
@@ -2494,10 +2494,6 @@ void MeasureTask(void* pvParameters)
 		touchEnabled = 0;	//Deshabilito el touch (ver TouchGFX/target/STM32TouchController.cpp)
 		SPI_ChangeParameters(&hspi2, SPI_DATASIZE_16BIT, SPI_POLARITY_HIGH);
 
-//		//Configuración inicial de timer
-//		if(freq[0]<1000) TIM_ConfigMode(LOW_FREQ);
-//		else	TIM_ConfigMode(HIGH_FREQ);
-		xSemaphoreGive(sem_USB);
 		//Para cada punto de frecuencia
 		for(i = 0; i< total_points; i++)
 		{
@@ -2513,26 +2509,25 @@ void MeasureTask(void* pvParameters)
 			HAL_GPIO_WritePin(RST_VIN_GPIO_Port, RST_VIN_Pin, GPIO_PIN_RESET);
 			HAL_GPIO_WritePin(RST_VOUT_GPIO_Port, RST_VOUT_Pin, GPIO_PIN_RESET);
 
-//			if(freq[i]<10)
-//				vTaskDelay(pdMS_TO_TICKS(1000));
-//			else
-//				vTaskDelay(pdMS_TO_TICKS(100));
-//
-//			//libero tarea de MEDICION DE MAGNITUD:
-//			xSemaphoreGive(sem_mod);
+			if(freq[i]<10)
+				vTaskDelay(pdMS_TO_TICKS(1000));
+			else
+				vTaskDelay(pdMS_TO_TICKS(100));
+
+			//libero tarea de MEDICION DE MAGNITUD:
+			xSemaphoreGive(sem_mod);
 
 			//libero tarea de MEDICION DE FASE:
-//			if(freq[i]<10000)
-//				xQueueSend(queue_freq_phase, &freq[i], portMAX_DELAY);
-//
-//			//Me quedo esperando los resultados de cada tarea
-//			xQueueReceive(queue_mod, &mag[i], portMAX_DELAY);
-//
-//			if(freq[i]<10000)
-//				xQueueReceive(queue_phase, &phase[i], portMAX_DELAY);
+			if(mag[i-1]>-15)
+				xQueueSend(queue_freq_phase, &i, portMAX_DELAY);
 
-			//Desactivo el generador para luego activarlo en la proxima frecuencia
-//			AD9833_SetEnabled(FALSE);
+			//Me quedo esperando los resultados de cada tarea
+			xQueueReceive(queue_mod, &mag[i], portMAX_DELAY);
+
+			if(mag[i-1]>-15)
+				xQueueReceive(queue_phase, &phase[i], portMAX_DELAY);
+			else
+				phase[i] = phase[i-1];
 
 		}
 		//Reconfiguro el spi a lo que necesita el touch
@@ -2541,6 +2536,8 @@ void MeasureTask(void* pvParameters)
 		touchEnabled = 1; //Habilito touch
 
 		data_ready = 1;
+
+		xSemaphoreGive(sem_USB);	//Transmito por USB los datos medidos
 	}
 }
 
@@ -2647,22 +2644,16 @@ void PhaseTask(void *pvParameters)
 {
 	float time_diff;
 
-	float freq_val;
+	uint16_t index;
 	float phase_val;
 	float auxPhase_val;
 
-//	uint8_t configFilter = 1;
+	uint8_t firstDiscontinuity = 1;
 
 	while(1)
 	{
 		phase_val = 0;
-		xQueueReceive(queue_freq_phase, &freq_val, portMAX_DELAY);
-
-//		if(freq_val >= 1000 && configFilter)
-//		{
-//			TIM_ConfigMode(HIGH_FREQ);
-//			configFilter = 0;
-//		}
+		xQueueReceive(queue_freq_phase, &index, portMAX_DELAY);
 
 		HAL_TIM_IC_Start_IT(&htim1, TIM_CHANNEL_2);
 		HAL_TIM_IC_Start_IT(&htim1, TIM_CHANNEL_3);
@@ -2680,10 +2671,23 @@ void PhaseTask(void *pvParameters)
 
 			medicion_realizada = 0;
 
-			auxPhase_val = -2*M_PI*freq_val*time_diff;
+			auxPhase_val = -2*180*freq[index]*time_diff;	//fase en grados sexagecimales
 
-			if(auxPhase_val >= (float)-2*M_PI)	//Detecto si el filtro digital no pudo filtrar ruido de comparador
+			if((auxPhase_val - phase[index-1]) > 150 && firstDiscontinuity)	//Se detecta una discontinuidad en la que la fase debe subir (Ejemplo Notch)
+			{
+				phase_val += auxPhase_val + 360;
+				firstDiscontinuity = 0;
+			}
+
+			else if((phase[index-1] - auxPhase_val) > 150 && firstDiscontinuity)	//Se detecta una discontinuidad en la que la fase debe bajar
+			{
+				phase_val += auxPhase_val - 360;
+				firstDiscontinuity = 0;
+			}
+
+			else if(abs(auxPhase_val) <= (float)360)	//Detecto si el filtro digital no pudo filtrar ruido de comparador
 				phase_val += auxPhase_val;
+
 			else
 				i--;
 
@@ -2694,6 +2698,9 @@ void PhaseTask(void *pvParameters)
 		HAL_TIM_IC_Stop_IT(&htim1, TIM_CHANNEL_3);
 
 		xQueueSend(queue_phase, &phase_val, portMAX_DELAY);
+
+		if(index==total_points-1)
+			firstDiscontinuity = 1;
 	}
 }
 
@@ -2704,23 +2711,17 @@ void USBTask(void *pvParameters)
 	{
 		xSemaphoreTake(sem_USB, portMAX_DELAY);
 
-		for(uint16_t i=0;i<total_points;i++)
-		{
-			mag[i] = -i*2;
-			phase[i] = i+2;
-		}
-
 		USBD_CUSTOM_HID_SendReport(&hUsbDeviceFS,(uint8_t*)&total_points,sizeof(total_points));
 
-		vTaskDelay(pdMS_TO_TICKS(10));//Delay para evitar pérdida de paquetes
+		vTaskDelay(pdMS_TO_TICKS(100));//Delay para evitar pérdida de paquetes
 
 		USBD_CUSTOM_HID_SendReport(&hUsbDeviceFS,(uint8_t*)freq,total_points*4);
 
-		vTaskDelay(pdMS_TO_TICKS(10));
+		vTaskDelay(pdMS_TO_TICKS(100));
 
 		USBD_CUSTOM_HID_SendReport(&hUsbDeviceFS,(uint8_t*)mag,total_points*4);
 
-		vTaskDelay(pdMS_TO_TICKS(10));
+		vTaskDelay(pdMS_TO_TICKS(100));
 
 		USBD_CUSTOM_HID_SendReport(&hUsbDeviceFS,(uint8_t*)phase,total_points*4);
 	}

@@ -25,6 +25,8 @@ private slots:
 
     void on_Receive_USB_clicked();
 
+    void on_Reset_Axis_clicked();
+
 private:
     Ui::MainWindow *ui;
 

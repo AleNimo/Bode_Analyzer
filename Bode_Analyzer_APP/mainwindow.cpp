@@ -46,6 +46,9 @@ MainWindow::MainWindow(QWidget *parent)
     QSharedPointer<QCPAxisTickerLog> logTicker(new QCPAxisTickerLog);
     magAxisRect->axis(QCPAxis::atBottom)->setTicker(logTicker);
     phaseAxisRect->axis(QCPAxis::atBottom)->setTicker(logTicker);
+
+    ui->label_connection_ok->setText("<font color='green'>Conexión exitosa</font>");
+    ui->label_connection_ok->setVisible(false);
 }
 
 MainWindow::~MainWindow()
@@ -68,7 +71,7 @@ void MainWindow::on_Connect_USB_clicked()
 
     connected = 1;
 
-    r = libusb_init(&ctx);
+    libusb_init(&ctx);
 
     libusb_set_debug(ctx, 3); //set verbosity level to 3, as suggested in the documentation
 
@@ -102,10 +105,10 @@ void MainWindow::on_Connect_USB_clicked()
             libusb_get_config_descriptor(devs[Dispositivo], 0, &config);
 
 
-             qDebug() <<"Interfaces: "<<(uint8_t)config->bNumInterfaces;
+            qDebug() <<"Interfaces: "<<(uint8_t)config->bNumInterfaces;
 
-             for(j=0; j<(uint8_t )(config->bNumInterfaces); j++)
-             {
+            for(j=0; j<(uint8_t )(config->bNumInterfaces); j++)
+            {
                  inter = &config->interface[j];
 
                  qDebug()<<"Cantidad de conf. alternativas: "<<(uint8_t) (inter->num_altsetting);
@@ -125,11 +128,10 @@ void MainWindow::on_Connect_USB_clicked()
                             qDebug() << "Tipo de Descriptor: "<<(uint8_t )epdesc->bDescriptorType;
 
                             qDebug() << "Dirección de EP: "<< Qt::hex << (uint8_t )epdesc->bEndpointAddress;
-
                      }
 
                  }
-             }
+            }
 
             libusb_free_config_descriptor(config);
 
@@ -139,16 +141,24 @@ void MainWindow::on_Connect_USB_clicked()
             if(r<0)
             {
                 qDebug() << "Error" << r << "abriendo dispositivo";
+                ui->label_connection_ok->setText("<font color='red'>Error conectando con dispositivo</font>");
+                ui->label_connection_ok->setVisible(true);
+                return;
+            }
+            else
+            {
+                ui->label_connection_ok->setText("<font color='green'>Conexión exitosa</font>");
+                ui->label_connection_ok->setVisible(true);
                 return;
             }
         }
     }
+    ui->label_connection_ok->setText("<font color='red'>Bode Analyzer no conectado</font>");
+    ui->label_connection_ok->setVisible(true);
 }
 
 void MainWindow::on_Receive_USB_clicked()
 {
-    int r;
-
 //    unsigned char RxData [TRANSFER_SIZE];
 
 //    QList<float*> freq_mag_phase;
@@ -156,6 +166,10 @@ void MainWindow::on_Receive_USB_clicked()
     unsigned char freq_char[2400];
     unsigned char mag_char[2400];
     unsigned char phase_char[2400];
+
+    float* freq_float;
+    float* mag_float;
+    float* phase_float;
 
     int actual_length;
 
@@ -166,7 +180,7 @@ void MainWindow::on_Receive_USB_clicked()
     //pide primero la cantidad de puntos calculados
     unsigned char total_points_char[4];
 
-    r = libusb_interrupt_transfer(dev_handle, 0x81 , total_points_char, 4 , &actual_length, 0);
+    libusb_interrupt_transfer(dev_handle, 0x81 , total_points_char, 4 , &actual_length, 0);
 
     unsigned int total_points = *(unsigned int*)total_points_char;
 
@@ -179,13 +193,11 @@ void MainWindow::on_Receive_USB_clicked()
         libusb_interrupt_transfer(dev_handle , 0x81 , phase_char , 4*total_points , &actual_length , 0);
 
         //Casteo de la data en byts de freq,mag,phase a float
-        float* freq_float = new float[total_points];
+
         freq_float = (float*)freq_char;
 
-        float* mag_float = new float[total_points];
         mag_float = (float*)mag_char;
 
-        float* phase_float = new float[total_points];
         phase_float = (float*)phase_char;
 
         Filter* filtro = new Filter(freq_float,mag_float,phase_float,total_points);
@@ -193,40 +205,25 @@ void MainWindow::on_Receive_USB_clicked()
 
         ui->PlotWidget->addGraph(magAxisRect->axis(QCPAxis::atBottom), magAxisRect->axis(QCPAxis::atLeft));
         ui->PlotWidget->graph(0)->setPen(QPen(Qt::red));
-        ui->PlotWidget->graph(0)->data()->set(filters[0]->mag);
+        ui->PlotWidget->graph(0)->data()->set(filters.last()->mag);
 
         ui->PlotWidget->addGraph(phaseAxisRect->axis(QCPAxis::atBottom), phaseAxisRect->axis(QCPAxis::atLeft));
         ui->PlotWidget->graph(1)->setPen(QPen(Qt::blue));
-        ui->PlotWidget->graph(1)->data()->set(filters[0]->phase);
-
-
-//        ui->PlotWidget->addGraph();
-//        ui->PlotWidget->graph(0)->setData()
-        //ui->gridLayout->addWidget(filters.last()->chart);
+        ui->PlotWidget->graph(1)->data()->set(filters.last()->phase);
 
     }
         //no hay datos
 
-//    float freq[] = {1, 50, 100000};
-//    float mag[] = {0, -3, -40};
-//    float phase[] = {0, -45, -90};
-//    unsigned int total_points = 3;
-
-//    Filter* filtro = new Filter(freq,mag,phase,total_points);
-//    filters.append(filtro);
-
-//    ui->PlotWidget->addGraph(magAxisRect->axis(QCPAxis::atBottom), magAxisRect->axis(QCPAxis::atLeft));
-//    ui->PlotWidget->graph(0)->setPen(QPen(Qt::red));
-//    ui->PlotWidget->graph(0)->data()->set(filters[0]->mag);
-
-//    ui->PlotWidget->addGraph(phaseAxisRect->axis(QCPAxis::atBottom), phaseAxisRect->axis(QCPAxis::atLeft));
-//    ui->PlotWidget->graph(1)->setPen(QPen(Qt::blue));
-//    ui->PlotWidget->graph(1)->data()->set(filters[0]->phase);
-
-//    ui->PlotWidget->rescaleAxes();
-//    ui->PlotWidget->replot();
-//    ui->PlotWidget->setInteractions(QCP::iRangeDrag | QCP::iRangeZoom);
-    //qDebug() << "Dispositivo N°:" << Dispositivo;
+    ui->PlotWidget->rescaleAxes();
+    ui->PlotWidget->replot();
+    ui->PlotWidget->setInteractions(QCP::iRangeDrag | QCP::iRangeZoom);
 }
 
+
+
+void MainWindow::on_Reset_Axis_clicked()
+{
+    ui->PlotWidget->rescaleAxes();
+    ui->PlotWidget->replot();
+}
 

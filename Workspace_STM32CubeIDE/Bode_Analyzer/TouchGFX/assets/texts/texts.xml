@@ -10,7 +10,7 @@
         <Translation Language="GB">Cumplir: Fmin &lt; Fmax</Translation>
       </Text>
       <Text Id="__SingleUse_2J35" Alignment="Center" TypographyId="Calibri">
-        <Translation Language="GB">Fase [rad]</Translation>
+        <Translation Language="GB">Fase [°]</Translation>
       </Text>
       <Text Id="__SingleUse_O5AD" Alignment="Center" TypographyId="Calibri">
         <Translation Language="GB">Módulo [dB]</Translation>
