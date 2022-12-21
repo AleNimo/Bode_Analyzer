@@ -3,7 +3,7 @@
 
 ### Eclipse ###
 .metadata
-bin/
+#bin/
 tmp/
 *.tmp
 *.bak
@@ -97,7 +97,7 @@ local.properties
 *.lo
 
 # Shared objects (inc. Windows DLLs)
-*.dll
+#*.dll
 *.so
 *.so.*
 *.dylib
