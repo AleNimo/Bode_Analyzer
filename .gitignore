@@ -175,4 +175,7 @@ scripts/__pycache__/
 ### TouchGFX ###
 generated/
 
+!/Workspace_STM32CubeIDE/Bode_Analyzer/TouchGFX/target/generated
+
+
 simulator/msvs/.vs
