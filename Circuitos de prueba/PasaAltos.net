@@ -1,7 +1,0 @@
-* D:\UTN\Nivel_4\Tecnicas_Digitales_2\Bode_Analyzer\Circuitos de prueba\PasaAltos.asc
-V1 N001 0 AC 1
-R1 0 Vo 10k
-C1 Vo N001 100n
-.ac dec 100 1 1meg
-.backanno
-.end

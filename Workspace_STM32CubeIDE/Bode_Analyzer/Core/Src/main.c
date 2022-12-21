@@ -2493,23 +2493,24 @@ void MeasureTask(void* pvParameters)
 		//Para cada punto de frecuencia
 		for(i = 0; i< total_points; i++)
 		{
-			//Reseteo detectores de pico antes de rehabilitar señal
+			//Reseteo detectores de pico (descargo capacitores)
 			HAL_GPIO_WritePin(RST_VIN_GPIO_Port, RST_VIN_Pin, GPIO_PIN_SET);
 			HAL_GPIO_WritePin(RST_VOUT_GPIO_Port, RST_VOUT_Pin, GPIO_PIN_SET);
 
 			//Cambio de frecuencia (frecuencia redondeada a entero por el momento)
-			//Reescribo freq con el valor que verdaderamente se genera
+			//Reescribo freq[i] con el valor que verdaderamente se genera (para realizar los calculos y graficar correctamente)
 			freq[i] = AD9833_SetFrequency(freq[i]);
 
 			vTaskDelay(pdMS_TO_TICKS(1));
-			//Desactivo mosfets
+
+			//Desactivo mosfets que descargan capacitores
 			HAL_GPIO_WritePin(RST_VIN_GPIO_Port, RST_VIN_Pin, GPIO_PIN_RESET);
 			HAL_GPIO_WritePin(RST_VOUT_GPIO_Port, RST_VOUT_Pin, GPIO_PIN_RESET);
 
 			if(freq[i]<10)
 				vTaskDelay(pdMS_TO_TICKS(1000));
 			else
-				vTaskDelay(pdMS_TO_TICKS(500));
+				vTaskDelay(pdMS_TO_TICKS(1000));
 
 			//libero tarea de MEDICION DE MAGNITUD:
 			xSemaphoreGive(sem_mod);
