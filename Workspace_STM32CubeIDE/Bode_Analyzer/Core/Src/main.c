@@ -2507,10 +2507,7 @@ void MeasureTask(void* pvParameters)
 			HAL_GPIO_WritePin(RST_VIN_GPIO_Port, RST_VIN_Pin, GPIO_PIN_RESET);
 			HAL_GPIO_WritePin(RST_VOUT_GPIO_Port, RST_VOUT_Pin, GPIO_PIN_RESET);
 
-			if(freq[i]<10)
-				vTaskDelay(pdMS_TO_TICKS(1000));
-			else
-				vTaskDelay(pdMS_TO_TICKS(1000));
+			vTaskDelay(pdMS_TO_TICKS(1000));
 
 			//libero tarea de MEDICION DE MAGNITUD:
 			xSemaphoreGive(sem_mod);
@@ -2684,22 +2681,6 @@ void PhaseTask(void *pvParameters)
 
 			else
 				phase_val+=phase_met1; //Sigo con metodo 1
-
-
-//			else if((phase[index-1] - auxPhase_val) > 150 && discontinuity == 0)	//Se detecta una discontinuidad en la que la fase debe subir (Ejemplo Notch)
-//			{
-//				phase_val += auxPhase_val + 360;
-//				discontinuity = 1;
-//			}
-//
-//			else if((auxPhase_val - phase[index-1]) > 150 && discontinuity == 0)	//Se detecta una discontinuidad en la que la fase debe bajar
-//			{
-//				phase_val += auxPhase_val - 360;
-//				discontinuity = -1;
-//			}
-//
-//			else
-//				phase_val += auxPhase_val + discontinuity*360;
 
 			medicion_realizada = 0;
 
