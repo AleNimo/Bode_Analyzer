@@ -2445,24 +2445,6 @@ void TIM_ConfigPrescaler(uint32_t prescaler)
 	TIM1->EGR = TIM_EGR_UG; //Genero un evento para cambiar el prescaler inmediatamente (sino se cambia al hacer overflow)
 }
 
-//void ADC_SelectChannel(uint32_t channel)
-//{
-//	ADC_ChannelConfTypeDef sConfig = {0};
-//
-//	if(channel == ADC_CHANNEL_2)
-//		sConfig.Channel = ADC_CHANNEL_2;
-//
-//	else if(channel == ADC_CHANNEL_3)
-//		sConfig.Channel = ADC_CHANNEL_3;
-//
-//	sConfig.Rank = 1;
-//	sConfig.SamplingTime = ADC_SAMPLETIME_56CYCLES;
-//	if (HAL_ADC_ConfigChannel(&hadc1, &sConfig) != HAL_OK)
-//	{
-//	Error_Handler();
-//	}
-//}
-
 extern void touchgfxSignalVSync(void);
 
 void StartHardwareTask(void* pvParameters)
@@ -2537,7 +2519,6 @@ void MeasureTask(void* pvParameters)
 		xSemaphoreGive(sem_USB);	//Transmito por USB los datos medidos
 	}
 }
-
 
 void HAL_ADC_ConvCpltCallback(ADC_HandleTypeDef* hadc)
 {
