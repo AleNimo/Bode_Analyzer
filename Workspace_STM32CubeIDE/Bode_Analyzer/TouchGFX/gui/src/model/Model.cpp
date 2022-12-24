@@ -9,8 +9,11 @@ extern float mag[MAX_FREQ_POINTS];
 extern float phase[MAX_FREQ_POINTS];
 extern unsigned char data_ready;
 extern unsigned int total_points;
+extern int progress;
 
 extern SemaphoreHandle_t sem_measure;
+
+int previous_progress = 0;
 
 Model::Model() : modelListener(0)
 {
@@ -42,12 +45,20 @@ void Model::Freq_Config(float freq_min, float freq_max, unsigned int points_deca
 
 void Model::tick()
 {
-
 	if(data_ready)
 	{
-		modelListener->write(freq,mag,phase,total_points);
+		modelListener->Write(freq,mag,phase,total_points);
 
 		data_ready = 0;
 	}
 
+	if(progress != previous_progress)
+	{
+		modelListener->Update_Progress(progress);
+
+		if(progress == 100)
+			progress = 0;
+
+		previous_progress = progress;
+	}
 }

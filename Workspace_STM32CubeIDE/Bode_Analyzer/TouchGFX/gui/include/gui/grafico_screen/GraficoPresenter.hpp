@@ -27,7 +27,9 @@ public:
 
     virtual ~GraficoPresenter() {};
 
-    virtual void write(float* freq,float*mag,float*phase,unsigned int num_points);
+    virtual void Write(float* freq,float*mag,float*phase,unsigned int num_points);
+
+    virtual void Update_Progress(int progress);
 
 
 private:

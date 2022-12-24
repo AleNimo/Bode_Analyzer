@@ -1873,8 +1873,9 @@ float phase[MAX_FREQ_POINTS];
 //	};
 
 uint8_t touchEnabled;
-unsigned char data_ready = 0;
-unsigned int total_points = 0;
+unsigned char data_ready;
+unsigned int total_points;
+int progress;
 
 //Vector DMA para ADC
 uint32_t ADC_buffer_DMA[MOD_SAMPLES];	//Solo una muestra de entrada y salida
@@ -2508,6 +2509,8 @@ void MeasureTask(void* pvParameters)
 			else
 				phase[i] = phase[i-1];
 
+			//Actualizo la barra de progreso (0% a 100%)
+			progress = ((i+1)*100) / total_points;
 		}
 		//Reconfiguro el spi a lo que necesita el touch
 		SPI_ChangeParameters(&hspi2, SPI_DATASIZE_8BIT, SPI_POLARITY_LOW);

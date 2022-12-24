@@ -1696,6 +1696,32 @@
               "Blue": 237
             },
             "AutoSize": true
+          },
+          {
+            "Type": "BoxWithBorder",
+            "Name": "darkBackground",
+            "Width": 320,
+            "Height": 240,
+            "Alpha": 199
+          },
+          {
+            "Type": "BoxProgress",
+            "Name": "progressBar",
+            "X": 68,
+            "Y": 110,
+            "Width": 184,
+            "Height": 20,
+            "Color": {
+              "Green": 151,
+              "Blue": 255
+            },
+            "Direction": "Right",
+            "FileNameBackground": "__designer\\Blue_ProgressIndicators_bg_medium_progress_indicator_bg_square_0_degrees.png",
+            "IndicatorPositionX": 2,
+            "IndicatorPositionY": 2,
+            "IndicatorPositionWidth": 180,
+            "IndicatorPositionHeight": 16,
+            "ProgressRangeMax": 100
           }
         ],
         "Interactions": [

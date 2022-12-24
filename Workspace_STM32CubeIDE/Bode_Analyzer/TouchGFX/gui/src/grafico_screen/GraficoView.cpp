@@ -27,6 +27,19 @@ void GraficoView::tearDownScreen()
     GraficoViewBase::tearDownScreen();
 }
 
+void GraficoView::Update_Progress(int progress)
+{
+	progressBar.setValue(progress);
+	if(progress == 100)
+	{
+		progressBar.setVisible(false);
+		darkBackground.setVisible(false);
+		progressBar.invalidate();
+		darkBackground.invalidate();
+		progressBar.setValue(0);
+
+	}
+}
 
 void GraficoView::Toggle_Mag_Phase()
 {
@@ -86,6 +99,8 @@ void GraficoView::Toggle_Mag_Phase()
 	//plot = true;
 
 }
+
+
 void GraficoView::DataDisplay(float* freq,float*mag,float*phase,unsigned int num_points)
 {
 

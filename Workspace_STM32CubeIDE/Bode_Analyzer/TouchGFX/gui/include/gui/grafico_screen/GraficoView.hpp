@@ -15,6 +15,8 @@ public:
     virtual void setupScreen();
     virtual void tearDownScreen();
 
+    virtual void Update_Progress(int progress);
+
     virtual void DataDisplay(float* freq,float*mag,float*phase,unsigned int num_points);
 
     virtual void Toggle_Mag_Phase();

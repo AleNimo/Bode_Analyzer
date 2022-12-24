@@ -85,6 +85,7 @@
 "./TouchGFX/generated/gui_generated/src/grafico_screen/GraficoViewBase.o"
 "./TouchGFX/generated/images/src/BitmapDatabase.o"
 "./TouchGFX/generated/images/src/__designer/image_Blue_Icons_Settings_32.o"
+"./TouchGFX/generated/images/src/__designer/image_Blue_ProgressIndicators_bg_medium_progress_indicator_bg_square_0_degrees.o"
 "./TouchGFX/generated/images/src/__designer/image_Blue_Slider_Horizontal_Medium_Indicators_Slider_Round_nob.o"
 "./TouchGFX/generated/images/src/__designer/image_Blue_Slider_Horizontal_Small_slider_horizontal_small_round_back.o"
 "./TouchGFX/generated/images/src/__designer/image_Blue_Slider_Horizontal_Small_slider_horizontal_small_round_fill.o"
