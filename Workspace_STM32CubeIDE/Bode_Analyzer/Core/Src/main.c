@@ -2634,13 +2634,13 @@ void PhaseTask(void *pvParameters)
 			vTaskDelay(pdMS_TO_TICKS(1));
 		}
 
-		HAL_TIM_IC_Start_IT(&htim1, TIM_CHANNEL_2);
-		HAL_TIM_IC_Start_IT(&htim1, TIM_CHANNEL_3);
-
-		medicion_realizada = 0;	//Fuerzo a que vuelva a medir
-
 		for(uint8_t i = 0; i<PHASE_SAMPLES; i++)
 		{
+			HAL_TIM_IC_Start_IT(&htim1, TIM_CHANNEL_2);
+			HAL_TIM_IC_Start_IT(&htim1, TIM_CHANNEL_3);
+
+			medicion_realizada = 0;	//Fuerzo a que vuelva a medir
+
 			while(medicion_realizada == 0);
 
 			if (IC_out >= IC_in)
@@ -2655,11 +2655,8 @@ void PhaseTask(void *pvParameters)
 			phase_met1 = -2*180*freq[index]*time_diff;	//fase en grados sexagecimales (Metodo 1)
 
 			if(abs(phase_met1) > 360) //Detecto si hay ruido de comparador (no puede haber desfasaje mayor a 360)
-			{
 				i--;
-				HAL_TIM_IC_Start_IT(&htim1, TIM_CHANNEL_2);
-				HAL_TIM_IC_Start_IT(&htim1, TIM_CHANNEL_3);
-			}
+
 			else if(phase_met1 < -180)	//Hay que pasar al metodo 2
 				phase_val += phase_met1 + 360;
 

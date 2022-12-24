@@ -89,7 +89,7 @@
             "BackgroundY": 22,
             "IndicatorPos": 7,
             "IndicatorMax": 173,
-            "ValueMax": 600
+            "ValueMax": 500
           },
           {
             "Type": "Slider",
@@ -104,7 +104,7 @@
             "BackgroundY": 22,
             "IndicatorPos": 7,
             "IndicatorMax": 173,
-            "ValueMax": 600
+            "ValueMax": 500
           },
           {
             "Type": "TextArea",

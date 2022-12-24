@@ -48,7 +48,7 @@ extern "C" {
 
 
 #define MOD_SAMPLES 20	//SAMPLES de entrada / SAMPLES de salida tomadas con el ADC
-#define PHASE_SAMPLES 1
+#define PHASE_SAMPLES 10
 
 #define MAX_FREQ_POINTS 600
 

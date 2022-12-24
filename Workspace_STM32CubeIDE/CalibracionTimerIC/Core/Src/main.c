@@ -21,7 +21,8 @@
 
 /* Private includes ----------------------------------------------------------*/
 /* USER CODE BEGIN Includes */
-
+#include <stdio.h>
+#include <string.h>
 /* USER CODE END Includes */
 
 /* Private typedef -----------------------------------------------------------*/
@@ -72,7 +73,6 @@ static void MX_TIM5_Init(void);
 int main(void)
 {
   /* USER CODE BEGIN 1 */
-	uint8_t bufferRX[5];
 	uint8_t bufferTX[7];
 	uint32_t time_diff;
   /* USER CODE END 1 */
@@ -105,7 +105,7 @@ int main(void)
   /* USER CODE BEGIN WHILE */
   while (1)
   {
-	  if(puls = 1)
+	  if(puls == 1)
 	  {
 		  puls = 0;
 
@@ -121,7 +121,7 @@ int main(void)
 			time_diff = ((65535 - IC_in) + IC_out);
 
 
-		  sprintf((char*)bufferTX, "%d\n", time_diff);
+		  sprintf((char*)bufferTX, "%lu\n", time_diff);
 
 		  HAL_UART_Transmit(&huart1, bufferTX, strlen((char*)bufferTX), HAL_MAX_DELAY);
 

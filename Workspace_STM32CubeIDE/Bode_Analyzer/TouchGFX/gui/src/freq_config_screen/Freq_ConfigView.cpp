@@ -8,8 +8,8 @@
 unsigned long range_min;
 unsigned long range_max;
 
-unsigned int value_sliderFmin = 200;
-unsigned int value_sliderFmax = 400;
+unsigned int value_sliderFmin = 100;
+unsigned int value_sliderFmax = 300;
 unsigned int value_sliderPoints = 20;
 
 Freq_ConfigView::Freq_ConfigView()
@@ -72,10 +72,7 @@ void Freq_ConfigView::SliderSet_Freq_Min(int value)
 
 	freq_min = pow(10, (float)value_sliderFmin/100.0);
 
-	if(freq_min >= 1000000)
-		sprintf(aux_string, "%d M", ROUND_TO_INT(freq_min/1000000.0));
-
-	else if(freq_min >= 1000)
+	if(freq_min >= 1000)
 		sprintf(aux_string, "%d K", ROUND_TO_INT(freq_min/1000.0));
 
 	else
@@ -96,10 +93,7 @@ void Freq_ConfigView::SliderSet_Freq_Max(int value)
 
 	freq_max = pow(10, (float)value_sliderFmax/100.0);
 
-	if(freq_max >= 1000000)
-		sprintf(aux_string, "%d M", ROUND_TO_INT(freq_max/1000000.0));
-
-	else if(freq_max >= 1000)
+	if(freq_max >= 1000)
 		sprintf(aux_string, "%d K", ROUND_TO_INT(freq_max/1000.0));
 
 	else
@@ -128,10 +122,7 @@ void Freq_ConfigView::Measure()
 {
 
 	//encontramos la decada maxima
-	if(freq_max > 100000) //Graficamos hasta 1 millon
-		range_max = 1000000;
-
-	else if(freq_max > 10000) //Graficamos hasta 100k
+	if(freq_max > 10000) //Graficamos hasta 100k
 		range_max = 100000;
 
 	else if(freq_max > 1000) //Graficamos hasta 10k
@@ -146,7 +137,7 @@ void Freq_ConfigView::Measure()
 	else if(freq_max > 1) //Graficamos hasta 10
 		range_max = 10;
 
-	//encontramos la decada maxima
+	//encontramos la decada minima
 	if(freq_min < 10) //Graficamos desde 1
 		range_min = 1;
 
@@ -159,11 +150,8 @@ void Freq_ConfigView::Measure()
 	else if  (freq_min < 10000) //Graficamos desde 1k
 		range_min = 1000;
 
-	else if  (freq_min < 100000) //Graficamos desde 10k
+	else if  (freq_min <= 100000) //Graficamos desde 10k
 		range_min = 10000;
-
-	else if (freq_min < 1000000) //Graficamos desde 100k
-		range_min = 100000;
 
 
 	presenter->Freq_Config_Presenter(freq_min, freq_max, value_sliderPoints);

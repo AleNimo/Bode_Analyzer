@@ -37,13 +37,13 @@ Idx Name          Size      VMA       LMA       File off  Algn
                   CONTENTS, READONLY, DEBUGGING, OCTETS
  16 .debug_macro  0001698c  00000000  00000000  0002afd8  2**0
                   CONTENTS, READONLY, DEBUGGING, OCTETS
- 17 .debug_line   000092b5  00000000  00000000  00041964  2**0
+ 17 .debug_line   000092b3  00000000  00000000  00041964  2**0
                   CONTENTS, READONLY, DEBUGGING, OCTETS
- 18 .debug_str    00090af9  00000000  00000000  0004ac19  2**0
+ 18 .debug_str    00090af9  00000000  00000000  0004ac17  2**0
                   CONTENTS, READONLY, DEBUGGING, OCTETS
- 19 .comment      00000050  00000000  00000000  000db712  2**0
+ 19 .comment      00000050  00000000  00000000  000db710  2**0
                   CONTENTS, READONLY
- 20 .debug_frame  00002058  00000000  00000000  000db764  2**2
+ 20 .debug_frame  00002058  00000000  00000000  000db760  2**2
                   CONTENTS, READONLY, DEBUGGING, OCTETS
 
 Disassembly of section .text:
@@ -502,11 +502,7 @@ int main(void)
  80005f6:	f04f 33ff 	mov.w	r3, #4294967295
  80005fa:	4803      	ldr	r0, [pc, #12]	; (8000608 <main+0x74>)
  80005fc:	f001 fe63 	bl	80022c6 <HAL_UART_Transmit>
-	Serial.print(adc0);
-	Serial.print("\tVoltage: ");
-	Serial.println(Voltage, 7);
-	Serial.println();
-	*/
+	}
 	HAL_Delay(100);
  8000600:	2064      	movs	r0, #100	; 0x64
  8000602:	f000 fb25 	bl	8000c50 <HAL_Delay>
