@@ -8,6 +8,10 @@
 #include "globales.h"
 #include "libusb.h"
 
+#define MOD_SAMPLES 10
+#define PHASE_SAMPLES 10
+
+#define MAX_POINTS 600
 
 
 MainWindow::MainWindow(QWidget *parent)
@@ -163,15 +167,31 @@ void MainWindow::on_Receive_USB_clicked()
 
 //    QList<float*> freq_mag_phase;
 
-    unsigned char freq_char[2400];
-    unsigned char mag_char[2400];
-    unsigned char phase_char[2400];
-
-    float* freq_float;
-    float* mag_float;
-    float* phase_float;
-
     int actual_length;
+
+    unsigned char freq_char[MAX_POINTS*4];
+    unsigned char mag_char[MOD_SAMPLES*4];
+    unsigned char phase_char[PHASE_SAMPLES*4];
+
+    float* freq;
+    float* mag_samples;
+    float* phase_samples;
+
+    float mag_mean[MAX_POINTS];
+
+    float vin_ui[MAX_POINTS];
+    float vout_ui[MAX_POINTS];
+    float mag_ui[MAX_POINTS];
+
+    float acumulador_vin;
+    float acumulador_vout;
+    float acumulador_phase;
+
+    float vin_mean[MAX_POINTS] = {0};
+    float vout_mean[MAX_POINTS] = {0};
+
+    float phase_mean[MAX_POINTS];
+    float phase_ui[MAX_POINTS];
 
     libusb_claim_interface(dev_handle, 0);
 
@@ -184,23 +204,62 @@ void MainWindow::on_Receive_USB_clicked()
 
     unsigned int total_points = *(unsigned int*)total_points_char;
 
-    if(total_points>0) // hay datos
+    if(total_points>0 && total_points <= MAX_POINTS) // hay datos y son menos del máximo
     {
         libusb_interrupt_transfer(dev_handle, 0x81, freq_char, 4*total_points , &actual_length , 0);
 
-        libusb_interrupt_transfer(dev_handle , 0x81 , mag_char , 4*total_points , &actual_length , 0);
+        freq = (float*)freq_char; //Casteo la data para trabajar con los floats
 
-        libusb_interrupt_transfer(dev_handle , 0x81 , phase_char , 4*total_points , &actual_length , 0);
+        for(unsigned int i = 0; i<total_points; i++)
+        {
+            libusb_interrupt_transfer(dev_handle , 0x81 , mag_char , 4*MOD_SAMPLES * 2 , &actual_length , 0);
 
-        //Casteo de la data en byts de freq,mag,phase a float
+            libusb_interrupt_transfer(dev_handle , 0x81 , phase_char , 4*PHASE_SAMPLES , &actual_length , 0);
 
-        freq_float = (float*)freq_char;
+            mag_samples = (float*)mag_char;
 
-        mag_float = (float*)mag_char;
+            phase_samples = (float*)phase_char;
 
-        phase_float = (float*)phase_char;
+            //Media de tensiones de vin y vout
+            for(unsigned int k = 0; k< MOD_SAMPLES*2; k+=2)
+            {
+                vin_mean[i] += mag_samples[k];
+                vout_mean[i] += mag_samples[k+1];
+            }
+            vin_mean[i] /= MOD_SAMPLES;
+            vout_mean[i] /= MOD_SAMPLES;
 
-        Filter* filtro = new Filter(freq_float,mag_float,phase_float,total_points);
+            acumulador_vin = 0;
+            acumulador_vout = 0;
+
+            //Incertidumbres tipo A de vin y vout
+            for(unsigned int j = 0; j<MOD_SAMPLES*2; j+=2)
+            {
+                acumulador_vin += (mag_samples[j] - vin_mean[i]) * (mag_samples[j] - vin_mean[i]);
+                acumulador_vout += (mag_samples[j+1] - vout_mean[i]) * (mag_samples[j+1] - vout_mean[i]);
+            }
+
+            vin_ui[i] = sqrt(acumulador_vin/(MOD_SAMPLES*(MOD_SAMPLES-1)));
+            vout_ui[i] = sqrt(acumulador_vout/(MOD_SAMPLES*(MOD_SAMPLES-1)));
+
+            //Media de fase
+            for(unsigned int k = 0; k<PHASE_SAMPLES; k++)
+                phase_mean[i] += phase_samples[k];
+
+            phase_mean[i] /= PHASE_SAMPLES;
+
+            //Incertidumbre tipo A de fase
+            acumulador_phase = 0;
+            for(unsigned int j = 0; j<PHASE_SAMPLES; j++)
+                acumulador_phase += (phase_samples[j] - phase_mean[i]) * (phase_samples[j] - phase_mean[i]);
+
+            phase_ui[i] = sqrt(acumulador_phase/(MOD_SAMPLES*(MOD_SAMPLES-1)));
+        }
+
+
+
+
+        Filter* filtro = new Filter(freq,mag_mean,phase_mean,total_points);
         filters.append(filtro);
 
         ui->PlotWidget->addGraph(magAxisRect->axis(QCPAxis::atBottom), magAxisRect->axis(QCPAxis::atLeft));
@@ -218,8 +277,6 @@ void MainWindow::on_Receive_USB_clicked()
     ui->PlotWidget->replot();
     ui->PlotWidget->setInteractions(QCP::iRangeDrag | QCP::iRangeZoom);
 }
-
-
 
 void MainWindow::on_Reset_Axis_clicked()
 {
