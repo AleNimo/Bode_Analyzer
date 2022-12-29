@@ -1908,6 +1908,11 @@ QueueHandle_t queue_freq_phase;
 QueueHandle_t queue_phase;
 
 QueueHandle_t queue_IC;
+
+QueueHandle_t queue_USB_MOD;
+QueueHandle_t queue_USB_PHASE;
+
+QueueHandle_t queue_hab_phase;
 /* USER CODE END PV */
 
 /* Private function prototypes -----------------------------------------------*/
@@ -1935,7 +1940,7 @@ void MeasureTask(void *pvParameters);
 void ModuleTask(void *pvParameters);
 void PhaseTask(void *pvParameters);
 
-//void USBTask(void *pvParameters);
+void USBTask(void *pvParameters);
 /* USER CODE END PFP */
 
 /* Private user code ---------------------------------------------------------*/
@@ -2033,6 +2038,12 @@ int main(void)
 
   queue_freq_phase = xQueueCreate(1, sizeof(uint16_t));
   queue_IC = xQueueCreate(2, sizeof(uint16_t));
+
+  queue_USB_MOD = xQueueCreate(MOD_SAMPLES, sizeof(float));
+  queue_USB_PHASE = xQueueCreate(PHASE_SAMPLES, sizeof(float));
+
+  queue_hab_phase = xQueueCreate(1, sizeof(uint8_t));
+
   /* USER CODE END RTOS_QUEUES */
 
   /* Create the thread(s) */
@@ -2044,7 +2055,7 @@ int main(void)
   xTaskCreate(MeasureTask, "Measure", configMINIMAL_STACK_SIZE, NULL, tskIDLE_PRIORITY+1, NULL);
   xTaskCreate(ModuleTask, "Module", configMINIMAL_STACK_SIZE, NULL, tskIDLE_PRIORITY+1, NULL);
   xTaskCreate(PhaseTask, "Phase", configMINIMAL_STACK_SIZE, NULL, tskIDLE_PRIORITY+1, NULL);
-//  xTaskCreate(USBTask, "USB", configMINIMAL_STACK_SIZE, NULL, tskIDLE_PRIORITY+1, NULL);
+  xTaskCreate(USBTask, "USB", configMINIMAL_STACK_SIZE, NULL, tskIDLE_PRIORITY+1, NULL);
   /* USER CODE END RTOS_THREADS */
 
   /* USER CODE BEGIN WHILE */
@@ -2498,6 +2509,7 @@ void StartHardwareTask(void* pvParameters)
 void MeasureTask(void* pvParameters)
 {
 	uint16_t i;
+	uint8_t phase_medida;
 
 	while(1)
 	{
@@ -2505,9 +2517,11 @@ void MeasureTask(void* pvParameters)
 
 		USBD_CUSTOM_HID_SendReport(&hUsbDeviceFS,(uint8_t*)&total_points,sizeof(total_points)); //Envío la cantidad de puntos total
 
-		vTaskDelay(pdMS_TO_TICKS(100));//Delay para evitar pérdida de paquetes
+		vTaskDelay(pdMS_TO_TICKS(10));//Delay para evitar pérdida de paquetes
 
 		USBD_CUSTOM_HID_SendReport(&hUsbDeviceFS,(uint8_t*)freq,total_points*4);	//Envío vector de frecuencias
+
+		vTaskDelay(pdMS_TO_TICKS(100));
 
 		//Reconfiguro el spi a lo que necesita el AD9833
 		touchEnabled = 0;	//Deshabilito el touch (ver TouchGFX/target/STM32TouchController.cpp)
@@ -2530,6 +2544,9 @@ void MeasureTask(void* pvParameters)
 			HAL_GPIO_WritePin(RST_VIN_GPIO_Port, RST_VIN_Pin, GPIO_PIN_RESET);
 			HAL_GPIO_WritePin(RST_VOUT_GPIO_Port, RST_VOUT_Pin, GPIO_PIN_RESET);
 
+			if(i>0)
+				xSemaphoreGive(sem_USB);
+
 			vTaskDelay(pdMS_TO_TICKS(1000));
 
 			//libero tarea de MEDICION DE MAGNITUD:
@@ -2539,19 +2556,31 @@ void MeasureTask(void* pvParameters)
 			xQueueReceive(queue_mod, &mag[i], portMAX_DELAY);
 
 			//libero tarea de MEDICION DE FASE:
+
 			if(mag[i]>-30 && freq[i] < 20000)
 			{
 				xQueueSend(queue_freq_phase, &i, portMAX_DELAY);
 				xQueueReceive(queue_phase, &phase[i], portMAX_DELAY);
+				phase_medida = 1;
 			}
 			else if (i==0)
+			{
 				phase[i] = 0;
+				phase_medida = 0;
+			}
+
 			else
+			{
 				phase[i] = phase[i-1];
+				phase_medida = 0;
+			}
+
+			xQueueSend(queue_hab_phase, &phase_medida, portMAX_DELAY);	//Informo a taskUSB si se realizó la medicion de fase o no
 
 			//Actualizo la barra de progreso (0% a 100%)
 			progress = ((i+1)*100) / total_points;
 		}
+		xSemaphoreGive(sem_USB);
 		//Reconfiguro el spi a lo que necesita el touch
 		SPI_ChangeParameters(&hspi2, SPI_DATASIZE_8BIT, SPI_POLARITY_LOW);
 
@@ -2583,7 +2612,7 @@ void HAL_ADC_ConvCpltCallback(ADC_HandleTypeDef* hadc)
 
 void ModuleTask(void *pvParameters)
 {
-	float v[MOD_SAMPLES];
+	float v_samples[MOD_SAMPLES];
 
 	float v_in_acum = 0;
 	float v_out_acum = 0;
@@ -2605,15 +2634,16 @@ void ModuleTask(void *pvParameters)
 		//Obtengo tensiones a partir de cuentas con transferencia calibrada de ADC (realizando interpolación lineal)
 		for(uint8_t j=0; j<MOD_SAMPLES; j+=2)
 		{
-			v[j] = ADCLinearInterpolation(ADC_buffer_DMA[j]);
-			v_in_acum += v[j];
-			v[j+1] = ADCLinearInterpolation(ADC_buffer_DMA[j+1]);
-			v_out_acum += v[j+1];
+			v_samples[j] = ADCLinearInterpolation(ADC_buffer_DMA[j]);
+			v_in_acum += v_samples[j];
+			v_samples[j+1] = ADCLinearInterpolation(ADC_buffer_DMA[j+1]);
+			v_out_acum += v_samples[j+1];
 		}
 
-		USBD_CUSTOM_HID_SendReport(&hUsbDeviceFS,(uint8_t*)v,MOD_SAMPLES * 4);	//Envío vector con muestras de tensiones
-
 		mag = 20*log10(v_out_acum/v_in_acum);
+
+		for(uint8_t i=0; i<MOD_SAMPLES; i++)
+			xQueueSend(queue_USB_MOD, &v_samples[i], portMAX_DELAY);
 
 		xQueueSend(queue_mod, &mag, portMAX_DELAY);
 	}
@@ -2646,13 +2676,13 @@ void HAL_TIM_IC_CaptureCallback(TIM_HandleTypeDef *htim)
 
 void PhaseTask(void *pvParameters)
 {
-	float time_diff;
+	float time_diff[PHASE_SAMPLES];
 
 	uint16_t index;
 
 	float phase_met1;	//Valor auxiliar correspondiente a metodo 1 de medicion de fase
 
-	float phase_val[PHASE_SAMPLES];	//Vector con PHASE_SAMPLES muestras de frecuencia puntual
+	float phase_val;	//Vector con PHASE_SAMPLES muestras de frecuencia puntual
 
 	float phase_val_acum = 0;	//acumulador para hacer el promedio
 
@@ -2683,17 +2713,17 @@ void PhaseTask(void *pvParameters)
 			while(medicion_realizada == 0);
 
 			if (IC_out >= IC_in)
-				time_diff = (float)(IC_out - IC_in) * htim1.Init.Prescaler / FREQ_TIM1;
+				time_diff[i] = (float)(IC_out - IC_in) * (htim1.Init.Prescaler+1) / FREQ_TIM1;
 
 			else if (IC_in > IC_out) //Entre IC_in e IC_out se llenó el registro de la cuenta
-				time_diff = (float)((65535 - IC_in) + IC_out) * htim1.Init.Prescaler / FREQ_TIM1;
+				time_diff[i] = (float)((65535 - IC_in) + IC_out) * (htim1.Init.Prescaler+1) / FREQ_TIM1;
 
-			time_diff = TimerLinearInterpolation_us(time_diff*1000000)/1000000;
+			time_diff[i] = TimerLinearInterpolation_us(time_diff[i]*1000000)/1000000;
 
 			//El metodo de medicion siempre es FaseOut - FaseIn (Método 1), luego
 			//matematicamente lo pasamos a FaseIn - FaseOut (Método 2) de ser necesario:
 
-			phase_met1 = -2*180*freq[index]*time_diff;	//fase en grados sexagecimales (Metodo 1)
+			phase_met1 = -2*180*freq[index]*time_diff[i];	//fase en grados sexagecimales (Metodo 1)
 
 			if(abs(phase_met1) > 360) //Detecto si hay ruido de comparador (no puede haber desfasaje mayor a 360)
 				i--;
@@ -2701,46 +2731,54 @@ void PhaseTask(void *pvParameters)
 			else
 			{
 				if(phase_met1 < -180)	//Hay que pasar al metodo 2
-					phase_val[i] = phase_met1 + 360;
+					phase_val = phase_met1 + 360;
 
 				else
-					phase_val[i] = phase_met1; //Sigo con metodo 1
+					phase_val = phase_met1; //Sigo con metodo 1
 
-				phase_val_acum += phase_val[i];
+				phase_val_acum += phase_val;
 			}
 			medicion_realizada = 0;
 
 		}
 		phase_val_acum /= (float)PHASE_SAMPLES;
 
-		USBD_CUSTOM_HID_SendReport(&hUsbDeviceFS,(uint8_t*)phase_val,PHASE_SAMPLES * 4);	//Envío vector con muestras de tensiones
+		for(uint8_t j = 0; j< PHASE_SAMPLES; j++)
+			xQueueSend(queue_USB_PHASE, &time_diff[j], portMAX_DELAY);
 
 		xQueueSend(queue_phase, &phase_val_acum, portMAX_DELAY);
 	}
 }
 
-//void USBTask(void *pvParameters)
-//{
-//
-//	while(1)
-//	{
-//		xSemaphoreTake(sem_USB, portMAX_DELAY);
-//
-//		USBD_CUSTOM_HID_SendReport(&hUsbDeviceFS,(uint8_t*)&total_points,sizeof(total_points));
-//
-//		vTaskDelay(pdMS_TO_TICKS(100));//Delay para evitar pérdida de paquetes
-//
-//		USBD_CUSTOM_HID_SendReport(&hUsbDeviceFS,(uint8_t*)freq,total_points*4);
-//
-//		vTaskDelay(pdMS_TO_TICKS(100));
-//
-//		USBD_CUSTOM_HID_SendReport(&hUsbDeviceFS,(uint8_t*)mag,total_points*4);
-//
-//		vTaskDelay(pdMS_TO_TICKS(100));
-//
-//		USBD_CUSTOM_HID_SendReport(&hUsbDeviceFS,(uint8_t*)phase,total_points*4);
-//	}
-//}
+void USBTask(void *pvParameters)
+{
+	uint8_t phase_medida;
+
+	float v_samples[MOD_SAMPLES];
+	float time_diff[PHASE_SAMPLES];
+
+	while(1)
+	{
+		for(uint8_t i=0; i< MOD_SAMPLES; i++)
+			xQueueReceive(queue_USB_MOD, &v_samples[i], portMAX_DELAY);
+
+		xQueueReceive(queue_hab_phase, &phase_medida, portMAX_DELAY);
+
+		if(phase_medida)	//Si se realizó la medición de fase obtengo los valores, sino se mantienen
+		{
+			for(uint8_t i=0; i< PHASE_SAMPLES; i++)
+				xQueueReceive(queue_USB_PHASE, &time_diff[i], portMAX_DELAY);
+		}
+
+		xSemaphoreTake(sem_USB, portMAX_DELAY);
+
+		USBD_CUSTOM_HID_SendReport(&hUsbDeviceFS,(uint8_t*)v_samples,MOD_SAMPLES * 4);	//Envío vector con muestras de tensiones
+
+		vTaskDelay(pdMS_TO_TICKS(500)); //Delay para evitar pérdida de paquetes
+
+		USBD_CUSTOM_HID_SendReport(&hUsbDeviceFS,(uint8_t*)time_diff,PHASE_SAMPLES * 4);	//Envío vector con muestras de tensiones
+	}
+}
 
 
 /* USER CODE END 4 */

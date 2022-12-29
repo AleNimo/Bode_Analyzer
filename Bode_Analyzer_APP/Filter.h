@@ -9,11 +9,17 @@ class Filter
 {
 
 public:
-    Filter(float* freq,float*mag,float* phase,unsigned int total_points);
+    Filter(float* freq,float*mag,float* mag_uc,float* phase,float* phase_uc, unsigned int total_points);
     ~Filter();
 
     QVector<QCPGraphData> mag;
-    QVector<QCPGraphData> phase; //Agregar retardo de grupo
+
+    QVector<QCPGraphData> mag_sup;
+    QVector<QCPGraphData> mag_inf;
+
+    QVector<QCPGraphData> phase;
+    QVector<QCPGraphData> phase_sup;
+    QVector<QCPGraphData> phase_inf;
 
     unsigned char total_points;
 
