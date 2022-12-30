@@ -2774,9 +2774,15 @@ void USBTask(void *pvParameters)
 
 		USBD_CUSTOM_HID_SendReport(&hUsbDeviceFS,(uint8_t*)v_samples,MOD_SAMPLES * 4);	//Envío vector con muestras de tensiones
 
-		vTaskDelay(pdMS_TO_TICKS(500)); //Delay para evitar pérdida de paquetes
+		vTaskDelay(pdMS_TO_TICKS(500));	//Delay para evitar pérdida de paquetes
 
-		USBD_CUSTOM_HID_SendReport(&hUsbDeviceFS,(uint8_t*)time_diff,PHASE_SAMPLES * 4);	//Envío vector con muestras de tensiones
+		if(phase_medida)
+			USBD_CUSTOM_HID_SendReport(&hUsbDeviceFS,(uint8_t*)time_diff,PHASE_SAMPLES * 4);	//Envío vector con desfasajes temporales
+		else
+		{
+			time_diff[0] = 0;
+			USBD_CUSTOM_HID_SendReport(&hUsbDeviceFS,(uint8_t*)time_diff,1);	//Informo que no se realizó medición de fase a la PC
+		}
 	}
 }
 

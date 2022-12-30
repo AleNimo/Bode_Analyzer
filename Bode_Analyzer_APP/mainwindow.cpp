@@ -225,8 +225,6 @@ void MainWindow::on_Receive_USB_clicked()
 
             v_samples = (float*)v_char;
 
-            timeDiff_samples = (float*)timeDiff_char;
-
             //Media de tensiones de vin y vout
             for(unsigned int k = 0; k< MOD_SAMPLES*2; k+=2)
             {
@@ -249,18 +247,26 @@ void MainWindow::on_Receive_USB_clicked()
             vin_ui[i] = sqrt(acumulador_vin/(MOD_SAMPLES*(MOD_SAMPLES-1)));
             vout_ui[i] = sqrt(acumulador_vout/(MOD_SAMPLES*(MOD_SAMPLES-1)));
 
-            //Media de desfasaje temporal
-            for(unsigned int k = 0; k<PHASE_SAMPLES; k++)
-                timeDiff_mean[i] += timeDiff_samples[k];
+            if(actual_length == 1 && timeDiff_char[0] == 0) //Si no midió la fase (por amplitud demasiado baja o frec. dem. alta)
+                timeDiff_mean[i] = -1;
 
-            timeDiff_mean[i] /= PHASE_SAMPLES;
+            else
+            {
+                timeDiff_samples = (float*)timeDiff_char;
 
-            //Incertidumbre tipo A de desfasaje temporal
-            acumulador_timeDiff = 0;
-            for(unsigned int j = 0; j<PHASE_SAMPLES; j++)
-                acumulador_timeDiff += (timeDiff_samples[j] - timeDiff_mean[i]) * (timeDiff_samples[j] - timeDiff_mean[i]);
+                //Media de desfasaje temporal
+                for(unsigned int k = 0; k<PHASE_SAMPLES; k++)
+                    timeDiff_mean[i] += timeDiff_samples[k];
 
-            timeDiff_ui[i] = sqrt(acumulador_timeDiff/(MOD_SAMPLES*(MOD_SAMPLES-1)));
+                timeDiff_mean[i] /= PHASE_SAMPLES;
+
+                //Incertidumbre tipo A de desfasaje temporal
+                acumulador_timeDiff = 0;
+                for(unsigned int j = 0; j<PHASE_SAMPLES; j++)
+                    acumulador_timeDiff += (timeDiff_samples[j] - timeDiff_mean[i]) * (timeDiff_samples[j] - timeDiff_mean[i]);
+
+                timeDiff_ui[i] = sqrt(acumulador_timeDiff/(MOD_SAMPLES*(MOD_SAMPLES-1)));
+            }
         }
 
 
@@ -291,33 +297,80 @@ void MainWindow::on_Receive_USB_clicked()
             //Fbt = 10MHz
             //±3x10^-7 por mes
             //±5x10^-6 por temperatura (de 0°C a 40°C)
-            float N = timeDiff_mean[i]*1000000;
 
-            float timeDiff_uj = ((3*pow(10,-7)*120 + 5*pow(10,-6) ) / 10000000 + 1/N) / sqrt(3);
+            if(timeDiff_mean[i] != -1)
+            {
+                unsigned long N = timeDiff_mean[i]*1000000000;   //Resolución del frecuencimetro en 1ns = 1/(10MHZ*100) (multiplicador x100)
 
-            float timeDiff_uc = sqrt(pow(timeDiff_ui[i],2) + pow(timeDiff_uj,2));
+                float timeDiff_uj = ((3*pow(10,-7)*120 + 5*pow(10,-6) ) / 10000000 + 1/(N*sqrt(100))) / sqrt(3);
 
-            //Calculo valor medio de fase
-            phase_mean[i] = -2*180*freq[i]*timeDiff_mean[i];	//fase en grados sexagecimales (Metodo 1)
+                float timeDiff_uc = sqrt(pow(timeDiff_ui[i],2) + pow(timeDiff_uj,2));
 
-            if(phase_mean[i] < -180)	//Hay que pasar al metodo 2
-                phase_mean[i] = phase_mean[i] + 360;
+                //Calculo valor medio de fase
+                phase_mean[i] = -2*180*freq[i]*timeDiff_mean[i];	//fase en grados sexagecimales (Metodo 1)
 
-            //Calculo incertidumbre combinada de fase (expando con k=2 por tcl)
-            phase_uc[i] = 2*180*freq[i]*timeDiff_uc*2;
+                if(phase_mean[i] < -180)	//Hay que pasar al metodo 2
+                    phase_mean[i] = phase_mean[i] + 360;
+
+                //Calculo incertidumbre combinada de fase (expando con k=2 por tcl)
+                phase_uc[i] = 2*180*freq[i]*timeDiff_uc*2;
+            }
+            else    //Si no se midió la fase
+            {
+                phase_mean[i] = phase_mean[i-1];    //Mantengo valor para el gráfico
+                phase_uc[i] = 0;
+            }
 
         }
 
         Filter* filtro = new Filter(freq,mag_mean,mag_uc,phase_mean,phase_uc,total_points);
         filters.append(filtro);
 
+
+
+        //Magnitud
         ui->PlotWidget->addGraph(magAxisRect->axis(QCPAxis::atBottom), magAxisRect->axis(QCPAxis::atLeft));
         ui->PlotWidget->graph(0)->setPen(QPen(Qt::red));
         ui->PlotWidget->graph(0)->data()->set(filters.last()->mag);
 
+        //Incertidumbre de magnitud
+        ui->PlotWidget->addGraph(magAxisRect->axis(QCPAxis::atBottom), magAxisRect->axis(QCPAxis::atLeft));
+        QPen pen;
+        pen.setStyle(Qt::DotLine);
+        pen.setWidth(1);
+        pen.setColor(QColor(180,180,180));
+        ui->PlotWidget->graph(1)->setName("Incertidumbre expandida 95,45%");
+        ui->PlotWidget->graph(1)->setPen(pen);
+        ui->PlotWidget->graph(1)->setBrush(QBrush(QColor(255,50,30,20)));
+        ui->PlotWidget->addGraph(magAxisRect->axis(QCPAxis::atBottom), magAxisRect->axis(QCPAxis::atLeft));
+//        ui->PlotWidget->legend->removeItem(ui->PlotWidget->legend->itemCount()-1); // don't show two confidence band graphs in legend
+        ui->PlotWidget->graph(2)->setPen(pen);
+        ui->PlotWidget->graph(1)->setChannelFillGraph(ui->PlotWidget->graph(2));
+        ui->PlotWidget->graph(1)->data()->set(filters.last()->mag_sup);
+        ui->PlotWidget->graph(2)->data()->set(filters.last()->mag_inf);
+
+        //Fase
         ui->PlotWidget->addGraph(phaseAxisRect->axis(QCPAxis::atBottom), phaseAxisRect->axis(QCPAxis::atLeft));
-        ui->PlotWidget->graph(1)->setPen(QPen(Qt::blue));
-        ui->PlotWidget->graph(1)->data()->set(filters.last()->phase);
+        ui->PlotWidget->graph(3)->setPen(QPen(Qt::blue));
+        ui->PlotWidget->graph(3)->data()->set(filters.last()->phase);
+
+        //Incertidumbre de Fase
+        ui->PlotWidget->addGraph(phaseAxisRect->axis(QCPAxis::atBottom), phaseAxisRect->axis(QCPAxis::atLeft));
+        QPen pen2;
+        pen2.setStyle(Qt::DotLine);
+        pen2.setWidth(1);
+        pen2.setColor(QColor(180,180,180));
+        ui->PlotWidget->graph(4)->setName("Incertidumbre expandida 95,45%");
+        ui->PlotWidget->graph(4)->setPen(pen2);
+        ui->PlotWidget->graph(4)->setBrush(QBrush(QColor(255,50,30,20)));
+        ui->PlotWidget->addGraph(phaseAxisRect->axis(QCPAxis::atBottom), phaseAxisRect->axis(QCPAxis::atLeft));
+//        ui->PlotWidget->legend->removeItem(ui->PlotWidget->legend->itemCount()-1); // don't show two confidence band graphs in legend
+        ui->PlotWidget->graph(5)->setPen(pen2);
+        ui->PlotWidget->graph(4)->setChannelFillGraph(ui->PlotWidget->graph(5));
+        ui->PlotWidget->graph(4)->data()->set(filters.last()->phase_sup);
+        ui->PlotWidget->graph(5)->data()->set(filters.last()->phase_inf);
+
+//        ui->PlotWidget->legend->setVisible(true);
 
     }
         //no hay datos
