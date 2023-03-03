@@ -53,6 +53,8 @@ MainWindow::MainWindow(QWidget *parent)
 
     ui->label_connection_ok->setText("<font color='green'>Conexión exitosa</font>");
     ui->label_connection_ok->setVisible(false);
+
+    this->setWindowTitle("Bode Analyzer");
 }
 
 MainWindow::~MainWindow()
